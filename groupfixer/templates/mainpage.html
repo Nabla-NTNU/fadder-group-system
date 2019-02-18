@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Faddergrupper{% endblock %}
+
+{% block content %}
+    <header><h1>Velg din faddergruppe</h1></header>
+    <form action="{% url 'post' %}" method="post">
+    {% csrf_token %}
+    <h3>Ditt navn:</h3>
+        <input type="text">
+
+    <h3>Ditt kjønn:</h3>
+    {% for gender in genders %}
+        <input type="radio" name="gender" id="{{ gender.0 }}" value="{{ gender.0 }}">
+        <label for="{{ gender.0 }}">{{ gender.1 }}</label><br>
+    {% endfor %}
+
+    <h3>Førstevalg:</h3>
+    <select name="pri_1">
+    {% for group in groups %}
+        <option value="{{ group.id }}">{{ group.name }}</option>
+    {% endfor %}
+    </select>
+
+    <h3>Andrevalg:</h3>
+    <select name="pri_2">
+    {% for group in groups %}
+        <option value="{{ group.id }}">{{ group.name }}</option>
+    {% endfor %}
+    </select>
+
+    <h3>Tredjepvalg:</h3>
+    <select name="pri_2">
+    {% for group in groups %}
+        <option value="{{ group.id }}">{{ group.name }}</option>
+    {% endfor %}
+    </select>
+    </form>
+{% endblock content %}
