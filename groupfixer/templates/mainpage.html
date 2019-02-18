@@ -2,6 +2,9 @@
 
 {% block title %}Faddergrupper{% endblock %}
 
+{% block more_head %} <script src="https://code.jquery.com/jquery-1.10.2.js"></script>{% endblock %}
+
+
 {% block content %}
     <header><h1>Velg din faddergruppe</h1></header>
     <form action="{% url 'post' %}" method="post">
@@ -17,23 +20,56 @@
 
     <h3>Førstevalg:</h3>
     <select name="pri_1">
+    <option value="-1"></option>
     {% for group in groups %}
-        <option value="{{ group.id }}">{{ group.name }}</option>
+        <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
     {% endfor %}
     </select>
 
     <h3>Andrevalg:</h3>
     <select name="pri_2">
+    <option value="-1"></option>
     {% for group in groups %}
-        <option value="{{ group.id }}">{{ group.name }}</option>
+        <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
     {% endfor %}
     </select>
 
-    <h3>Tredjepvalg:</h3>
-    <select name="pri_2">
+    <h3>Tredjevalg:</h3>
+    <select name="pri_3">
+    <option value="-1"></option>
     {% for group in groups %}
-        <option value="{{ group.id }}">{{ group.name }}</option>
+        <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
     {% endfor %}
     </select>
     </form>
+    <div></div>
+    <script>
+    $( "select[name='pri_1']" )
+      .change(function() {
+        let name_1 = $( "select[name='pri_1'] option:selected" ).text()
+        $( "div" ).text( name );
+        $( "select[name='pri_2'] option" ).each(function() {
+            $( this ).show();
+        });
+        $( "select[name='pri_2'] option[name=" + name_1 + "]").hide();
+        $( "select[name='pri_3'] option" ).each(function() {
+            $( this ).show();
+        });
+        $( "select[name='pri_3'] option[name=" + name_1 + "]").hide();
+        let name_2 = $( "select[name='pri_2'] option:selected" ).text()
+        $( "select[name='pri_3'] option[name=" + name_2 + "]").hide();
+      })
+      .trigger( "change" );
+    $( "select[name='pri_2']" )
+      .change(function() {
+        let name_2 = $( "select[name='pri_2'] option:selected" ).text()
+        let name_1 = $( "select[name='pri_1'] option:selected" ).text()
+        $( "select[name='pri_3'] option" ).each(function() {
+            $( this ).show();
+        });
+        $( "select[name='pri_3'] option[name=" + name_2 + "]").hide();
+        $( "select[name='pri_3'] option[name=" + name_1 + "]").hide();
+      })
+      .trigger( "change" );
+    </script>
 {% endblock content %}

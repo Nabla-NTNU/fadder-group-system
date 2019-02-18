@@ -9,6 +9,7 @@ class Gruppe(models.Model):
         verbose_name='Navn på faddergruppe',
         blank=False,
         max_length=80,
+        unique=True,
     )
 
     class Meta:
@@ -25,6 +26,7 @@ class Barn(models.Model):
         verbose_name='Navn på fadderbarn',
         blank=False,
         max_length=80,
+        unique=True,
     )
 
     GENDERS = (
