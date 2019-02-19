@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <header>
+    <h1>Kontrollpanel</h1>
+    </header>
+    {% if exists_active %}
+        <form action="{% url 'groupfixer:deactivate_session' %}" method="post">
+            {% csrf_token %}
+            <button class="deactivate" type="submit">Deaktiver påmelding</button>
+        </form>
+    {% else %}
+        <form action="{% url 'groupfixer:activate_session' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Aktiver påmelding</button>
+        </form>
+        <h3>Antall påmeldte: {{ number_of_users }}</h3>
+        <button class="option">Fordel på grupper</button>
+    {% endif %}
+{% endblock content %}

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import reverse
 from django.utils.html import escape
 from django.db import IntegrityError
@@ -10,9 +11,19 @@ from django.conf import settings
 import json
 import urllib
 
-from .models import Gruppe, Barn
+from .models import Gruppe, Barn, Session
 
 # Create your views here.
+
+
+def get_active_session(request):
+    try:
+        session = Session.objects.get(active=True)
+        exists_active = True
+    except Session.DoesNotExist:
+        exists_active = False
+        session = None
+    return session, exists_active
 
 
 class MainPage(TemplateView):
@@ -27,6 +38,20 @@ class MainPage(TemplateView):
 
 
 def post_choices(request):
+
+    if request.method != 'POST':
+        return HttpResponseRedirect(reverse('groupfixer:main'))
+
+    try:
+        session, exists_active = get_active_session(request)
+    except Session.MultipleObjectsReturned:
+        messages.error(request, 'Flere påmeldinger er aktive! Ta kontakt med administrator.')
+        return HttpResponseRedirect(reverse('groupfixer:main'))
+
+    if not exists_active:
+        messages.error(request, 'Ingen aktive påmeldinger.')
+        return HttpResponseRedirect(reverse('groupfixer:main'))
+
     try:
         ''' Begin reCAPTCHA validation '''
         recaptcha_response = request.POST.get('g-recaptcha-response')
@@ -39,10 +64,10 @@ def post_choices(request):
         req = urllib.request.Request(url, data=data)
         response = urllib.request.urlopen(req)
         result = json.loads(response.read().decode())
-        ''' End reCAPTCHA validation '''
         if not result['success']:
             messages.error(request, 'Ugyldig reCAPTCHA. Prøv igjen.')
             return HttpResponseRedirect(reverse('groupfixer:main'))
+        ''' End reCAPTCHA validation '''
 
         name = escape(request.POST['name'])
         if name == '':
@@ -76,3 +101,45 @@ def post_choices(request):
 
 def success(request):
     return render(request, 'success.html')
+
+
+@staff_member_required
+def control_panel(request):
+    context = dict()
+    try:
+        session, exists_active = get_active_session(request)
+    except Session.MultipleObjectsReturned:
+        messages.error(request, 'Mer enn en aktiv påmelding! Fiks dette først')
+        return HttpResponseRedirect(reverse('admin:groupfixer_session_changelist'))
+    context['session'] = session
+    context['exists_active'] = exists_active
+    context['number_of_users'] = Barn.objects.count()
+
+    return render(request, 'control_panel.html', context=context)
+
+
+@staff_member_required
+def deactivate_session(request):
+    if request.method == 'POST':
+        try:
+            session, exists_active = get_active_session(request)
+        except Session.MultipleObjectsReturned:
+            messages.error(request, 'Mer enn en aktiv påmelding! Fiks dette først')
+            return HttpResponseRedirect(reverse('admin:groupfixer_session_changelist'))
+
+        if not exists_active:
+            messages.error(request, 'Ingen aktive påmeldinger')
+        else:
+            session.active = False
+            session.save()
+            messages.success(request, 'Påmelding deaktivert')
+    return HttpResponseRedirect(reverse('groupfixer:control_panel'))
+
+
+@staff_member_required
+def activate_session(request):
+    if request.method == 'POST':
+        session = Session()
+        session.save()
+        messages.success(request, 'Påmelding aktivert')
+    return HttpResponseRedirect(reverse('groupfixer:control_panel'))

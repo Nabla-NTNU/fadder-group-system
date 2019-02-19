@@ -1,5 +1,7 @@
 from django.db import models
 
+import datetime
+
 # Create your models here.
 
 
@@ -72,3 +74,19 @@ class Barn(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Session(models.Model):
+
+    date_created = models.DateTimeField(
+        auto_now=True,
+        editable=False,
+    )
+
+    active = models.BooleanField(
+        default=True,
+        null=False,
+    )
+
+    def __str__(self):
+        return str(self.date_created)

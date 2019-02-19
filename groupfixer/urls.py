@@ -1,5 +1,5 @@
 from django.urls import path
-from groupfixer.views import MainPage, post_choices, success
+from groupfixer.views import MainPage, post_choices, success, control_panel, deactivate_session, activate_session
 
 app_name = 'groupfixer'
 
@@ -12,5 +12,14 @@ urlpatterns = [
          name='post'),
     path('success',
          success,
-         name='success')
+         name='success'),
+    path(r'control',
+         control_panel,
+         name='control_panel'),
+    path('control/deactivate',
+         deactivate_session,
+         name='deactivate_session'),
+    path('control/activate',
+         activate_session,
+         name='activate_session')
 ]
