@@ -48,7 +48,7 @@ class Barn(models.Model):
         Gruppe,
         related_name='pri_1s',
         verbose_name='Førsteprioritet',
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
     )
 
@@ -56,7 +56,7 @@ class Barn(models.Model):
         Gruppe,
         related_name='pri_2s',
         verbose_name='Andrerioritet',
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
     )
 
@@ -64,7 +64,7 @@ class Barn(models.Model):
         Gruppe,
         related_name='pri_3s',
         verbose_name='Tredjeprioritet',
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
     )
 
@@ -87,6 +87,10 @@ class Session(models.Model):
         default=True,
         null=False,
     )
+
+    class Meta:
+        verbose_name = 'Påmeldingsøkt'
+        verbose_name_plural = 'Påmeldingsøkter (helst ikke rør)'
 
     def __str__(self):
         return str(self.date_created)
