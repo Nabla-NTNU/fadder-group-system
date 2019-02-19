@@ -14,16 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from groupfixer.views import MainPage, post_choices
+from django.urls import path, include
 
 urlpatterns = [
-    path('',
-         MainPage.as_view(),
-         name='main'),
-    path('post',
-         post_choices,
-         name='post'),
     path('admin/',
          admin.site.urls),
+    path('',
+         include('groupfixer.urls',
+                 namespace='groupfixer'),),
 ]

@@ -30,8 +30,7 @@ class Barn(models.Model):
     )
 
     GENDERS = (
-        ('female', 'Kvinne'),
-        ('male', 'Mann'),
+        ('female', 'Kvinne'),        ('male', 'Mann'),
         ('other', 'Annet/Vil ikke oppgi'),
     )
 

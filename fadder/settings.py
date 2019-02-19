@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
+GOOGLE_RECAPTCHA_SECRET_KEY  = "6Lf7WZIUAAAAAPw4FyORP0fWOsec2t7sp-MAaquM"
 
 # Application definition
 
