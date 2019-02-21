@@ -12,6 +12,7 @@ import json
 import urllib
 
 from .models import Gruppe, Barn, Session
+from .utils import run_assign_groups
 
 # Create your views here.
 
@@ -142,4 +143,12 @@ def activate_session(request):
         session = Session()
         session.save()
         messages.success(request, 'Påmelding aktivert')
+    return HttpResponseRedirect(reverse('groupfixer:control_panel'))
+
+
+@staff_member_required
+def assign_groups(request):
+    if request.method == 'POST':
+        run_assign_groups()
+
     return HttpResponseRedirect(reverse('groupfixer:control_panel'))

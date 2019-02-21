@@ -10,7 +10,7 @@ import random
 
 
 def get_random_gender():
-    other_gender_prob = 0.05
+    other_gender_prob = 0.02
     female_proportion = 0.4
     if random.random() < other_gender_prob:
         return 'other'
@@ -38,8 +38,6 @@ def get_weighted_pick(choices, weights):
         i = i + 1
         cum_sum = cum_sum + weights[i]
     return choices[i]
-
-
 
 
 class Command(BaseCommand):
@@ -83,15 +81,15 @@ class Command(BaseCommand):
             while pri_3 == pri_1 or pri_3 == pri_2:
                 pri_3 = get_weighted_pick(groups, popularity)
 
-            try:
-                Barn.objects.create(name=name, gender=gender,
-                                    pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
-            except IntegrityError:
-                name = name + ' jr.'
-                Barn.objects.create(name=name, gender=gender,
-                                    pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
+            while True:
+                try:
+                    Barn.objects.create(name=name, gender=gender,
+                                        pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
+                    break
+                except IntegrityError:
+                    name = name + ' jr.'
             self.stdout.write('Created {}\n'.format(name))
-        
+
         self.stdout.write('\n\n')
 
         for i in range(len(groups)):
@@ -99,4 +97,3 @@ class Command(BaseCommand):
                                                            groups[i].name))
 
         self.stdout.write('\nFinished!\n\n')
-

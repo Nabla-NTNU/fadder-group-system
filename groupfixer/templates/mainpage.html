@@ -72,16 +72,16 @@
             $( this ).show();
         });
 
-        $( "select[name='pri_2'] option[name=" + name_1 + "]").hide();
+        $( "select[name='pri_2'] option[name='" + name_1 + "']").hide();
 
         $( "select[name='pri_3'] option" ).each(function() {
             $( this ).show();
         });
 
-        $( "select[name='pri_3'] option[name=" + name_1 + "]").hide();
+        $( "select[name='pri_3'] option[name='" + name_1 + "']").hide();
 
         let name_2 = $( "select[name='pri_2'] option:selected" ).text();
-        $( "select[name='pri_3'] option[name=" + name_2 + "]").hide();
+        $( "select[name='pri_3'] option[name='" + name_2 + "']").hide();
       })
       .trigger( "change" );
 
@@ -94,8 +94,8 @@
             $( this ).show();
         });
 
-        $( "select[name='pri_3'] option[name=" + name_2 + "]").hide();
-        $( "select[name='pri_3'] option[name=" + name_1 + "]").hide();
+        $( "select[name='pri_3'] option[name='" + name_2 + "']").hide();
+        $( "select[name='pri_3'] option[name='" + name_1 + "']").hide();
       })
       .trigger( "change" );
     </script>

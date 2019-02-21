@@ -15,6 +15,10 @@
             <button type="submit">Aktiver påmelding</button>
         </form>
         <h3>Antall påmeldte: {{ number_of_users }}</h3>
-        <button class="option">Fordel på grupper</button>
+        <form action="{% url 'groupfixer:assign_groups'%}" method="post">
+            {% csrf_token %}
+            <button class="option" type="submit">Fordel på grupper</button>
+        </form>
+
     {% endif %}
 {% endblock content %}

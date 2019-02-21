@@ -68,6 +68,14 @@ class Barn(models.Model):
         null=True,
     )
 
+    given_group = models.ForeignKey(
+        Gruppe,
+        related_name='member',
+        verbose_name='Tildelt gruppe',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+
     class Meta:
         verbose_name = 'Fadderbarn'
         verbose_name_plural = 'Fadderbarn'
