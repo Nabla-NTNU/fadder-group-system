@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django = "==2.1.*"
 faker = "==1.0.*"
+cvxpy = "==1.0.*"
 
 [dev-packages]
 
