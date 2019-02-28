@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from .models import Gruppe, Barn
 
 import numpy as np
@@ -47,7 +49,7 @@ def print_diagnostics(groups, members):
     for i in range(len(groups)):
         size_status = get_size_status(members[i])
         gender_status = get_female_proportion_status(members[i])
-        diag += ('{}:\t\t{} members{}\t{}\n'.format(groups[i].name, len(members[i]), size_status, gender_status))
+        diag += ('{}:\t{} members{}\t{}\n'.format(groups[i].name, len(members[i]), size_status, gender_status))
     return diag
 
 
@@ -61,14 +63,12 @@ def run_assign_groups():
     for g in groups:
         group_members.append(list(g.pri_1s.all()))
 
-    print(print_diagnostics(groups, group_members))
+    if settings.DEBUG:
+        print(print_diagnostics(groups, group_members))
 
     users = list(Barn.objects.all().order_by('pk'))
     np.random.shuffle(users)
     number_of_users = len(users)
-
-    #number_of_groups = 2
-    #number_of_users = 3
 
     placement_vector = cvxpy.Variable(number_of_groups*number_of_users, boolean=True)
 
@@ -126,7 +126,7 @@ def run_assign_groups():
                                         min_users_in_group_constraint, min_female_proportion_constraint,
                                         max_female_proportion_constraint])
 
-    problem.solve(verbose=True, solver=cvxpy.GLPK_MI, tm_lim=30000)
+    problem.solve(verbose=settings.DEBUG, solver=cvxpy.GLPK_MI, tm_lim=30000)
 
     for i in range(number_of_users):
         for j in range(number_of_groups):
@@ -139,5 +139,5 @@ def run_assign_groups():
 
     for g in groups:
         group_members.append(list(g.members.all()))
-
-    print(print_diagnostics(groups, group_members))
+    if settings.DEBUG:
+        print(print_diagnostics(groups, group_members))

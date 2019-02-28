@@ -15,13 +15,14 @@ class Command(BaseCommand):
         Gruppe.objects.all().delete()
         self.stdout.write('Success!\n\n')
 
-        gruppenavn = ['VIπ',
-                      'PytagoNach',
-                      'Breaking Rad',
-                      'Eulerbarna',
-                      'Hattiwattene',
-                      'Plænckshot',
-                      'Borhdellet']
+        gruppenavn = ['Faddeterminant ',
+                      'Alfa           ',
+                      'Beta           ',
+                      'Gamma          ',
+                      'Fadder Freedman',
+                      'Ehrenfest      ',
+                      'ÆreNash        ',
+                      'ForbiddenFadder']
 
         for navn in gruppenavn:
             Gruppe.objects.create(name=navn)
