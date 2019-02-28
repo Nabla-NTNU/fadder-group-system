@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 
+{% block more_head %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("#run_alg").click(function(){
+      $("#loader").fadeIn();
+  });
+});
+</script>
+
+{% endblock %}
+
 {% block content %}
     <header>
     <h1>Kontrollpanel</h1>
@@ -14,11 +27,50 @@
             {% csrf_token %}
             <button type="submit">Aktiver påmelding</button>
         </form>
-        <h3>Antall påmeldte: {{ number_of_users }}</h3>
+        <h4>Antall påmeldte: {{ number_of_users }} ({{ number_of_female_users }} kvinner / {{ number_of_male_users }} menn / {{ female_prop }}%)</h4>
         <form action="{% url 'groupfixer:assign_groups'%}" method="post">
             {% csrf_token %}
-            <button class="option" type="submit">Fordel på grupper</button>
+            <button class="option" type="submit" id="run_alg">Fordel på grupper</button>
         </form>
+        <br>
+        <div class="center-container" id="loader" style="display: none">
+            <div class="loader"></div>
+        </div>
+        <br>
+        <div class="center-container">
+            <textarea readonly rows="10" style="width: 100%">{{ diag }}</textarea>
+        </div>
+        <br>
+        {% if not_placed %}
+            <div>Ikke fordelt:
+            <ul>
+                {% for barn in not_placed %}
+                <li>{{ barn.name }}</li>
+                {% endfor %}
+            </ul>
+            </div>
+        {% endif %}
 
+
+        {% for group in groups %}
+            <table id="grouptable">
+              <tr>
+                <th>{{ group.name }}</th>
+              </tr>
+                {% if group.members.all %}
+                    {% for barn in group.members.all %}
+                      <tr>
+                        <td>{{ barn.name }} {% if barn.pri_1 == group %}(1){% elif barn.pri_2 == group %}(2){% elif barn.pri_3 == group %}(3){% endif %}</td>
+                      </tr>
+                    {% endfor %}
+                {% else %}
+                 <tr>
+                    <td>Ingen fadderbarn!</td>
+                  </tr>
+                {% endif %}
+            </table>
+            <br>
+        {% endfor %}
     {% endif %}
+
 {% endblock content %}

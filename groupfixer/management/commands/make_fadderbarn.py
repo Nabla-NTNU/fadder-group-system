@@ -9,9 +9,8 @@ from faker import Faker
 import random
 
 
-def get_random_gender():
+def get_random_gender(female_proportion):
     other_gender_prob = 0.02
-    female_proportion = 0.4
     if random.random() < other_gender_prob:
         return 'other'
     if random.random() < female_proportion:
@@ -41,9 +40,16 @@ def get_weighted_pick(choices, weights):
 
 
 class Command(BaseCommand):
-    help = 'Lager 120 fadderbarn'
+    help = 'Lager N fadderbarn'
+
+    def add_arguments(self, parser):
+        parser.add_argument('-n', type=int, default=120, required=False, dest='kull_size')
+        parser.add_argument('-p', type=float, default=0.4, required=False, dest='female_proportion')
 
     def handle(self, *args, **kwargs):
+        total_number = kwargs['kull_size']
+        female_proportion = kwargs['female_proportion']
+
         if not settings.DEBUG:
             self.stdout.write('You are not in DEBUG!')
             return
@@ -53,7 +59,7 @@ class Command(BaseCommand):
 
         fake = Faker('sv_SE')
 
-        total_number = 120
+        #total_number = 120
 
         groups = list(Gruppe.objects.all())
         popularity = get_random_popularity(len(groups))
@@ -63,7 +69,7 @@ class Command(BaseCommand):
         self.stdout.write('\n')
 
         for i in range(total_number):
-            gender = get_random_gender()
+            gender = get_random_gender(female_proportion)
             if gender == 'male':
                 name = fake.name_male()
             elif gender == 'female':

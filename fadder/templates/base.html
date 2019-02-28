@@ -8,7 +8,9 @@
             line-height:1.6;
             font-size:25px;
             color:#444;
-            padding:0 10px}
+            padding:0 10px;
+            /*font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;*/
+        }
         h1,h2,h3{line-height:1.2}
         input[type=text], select {
             width: 100%;
@@ -65,8 +67,54 @@
           background-color: #45a049;
         }
 
+        #grouptable {
+          /*font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;*/
+          border-collapse: collapse;
+          width: 100%;
+          /*display: inline-block;
+          vertical-align: top;*/
+        }
+
+        #grouptable td, #grouptable th {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+
+        #grouptable tr:nth-child(even){background-color: #f2f2f2;}
+
+        #grouptable tr:hover {background-color: #ddd;}
+
+        #grouptable th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+
+        .center-container {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .loader {
+          border: 16px solid #f3f3f3; /* Light grey */
+          border-top: 16px solid #3498db; /* Blue */
+          border-radius: 50%;
+          width: 120px;
+          height: 120px;
+          animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
     </style>
-    <link rel="shortcut icon" href="http://nabla.no/static/img/favicon.ico">
+    <link rel="shortcut icon" href="https://nabla.no/static/img/favicon.ico">
     <title>{% block title %}{% endblock title %}</title>
     {% block more_head %}{% endblock %}
 </head>

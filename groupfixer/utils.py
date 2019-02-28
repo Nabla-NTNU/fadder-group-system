@@ -3,9 +3,10 @@ from .models import Gruppe, Barn
 import numpy as np
 import cvxpy
 
-MINIMUM_SIZE = 8
+MINIMUM_SIZE = 10
 MAXIMUM_SIZE = 20
 MINIMUM_FEMALE_PROPORTION = 0.35
+MAXIMUM_FEMALE_PROPORTION = 0.65
 
 FIRST_PRI_REWARD = 10
 SECOND_PRI_REWARD = 8
@@ -29,19 +30,25 @@ def get_female_proportion_status(member_list):
             f += 1
         elif member.gender == 'male':
             m += 1
-    prop = f / (m + f)
+    try:
+        prop = f / (m + f)
+    except ZeroDivisionError:
+        prop = 0
     status = "{:.2f} female".format(prop)
     if prop < MINIMUM_FEMALE_PROPORTION:
         status += " - TOO LOW"
+    elif prop > MAXIMUM_FEMALE_PROPORTION:
+        status += " - TOO HIGH"
     return status
 
 
 def print_diagnostics(groups, members):
+    diag = ''
     for i in range(len(groups)):
         size_status = get_size_status(members[i])
         gender_status = get_female_proportion_status(members[i])
-        print('{}:\t\t{} members{}\t{}'.format(groups[i].name, len(members[i]), size_status, gender_status))
-    pass
+        diag += ('{}:\t\t{} members{}\t{}\n'.format(groups[i].name, len(members[i]), size_status, gender_status))
+    return diag
 
 
 def run_assign_groups():
@@ -54,9 +61,10 @@ def run_assign_groups():
     for g in groups:
         group_members.append(list(g.pri_1s.all()))
 
-    print_diagnostics(groups, group_members)
+    print(print_diagnostics(groups, group_members))
 
-    users = Barn.objects.all().order_by('pk')
+    users = list(Barn.objects.all().order_by('pk'))
+    np.random.shuffle(users)
     number_of_users = len(users)
 
     #number_of_groups = 2
@@ -106,16 +114,19 @@ def run_assign_groups():
     max_users_in_group_constraint = count_users_matrix * placement_vector <= np.full(number_of_groups, MAXIMUM_SIZE)
     min_users_in_group_constraint = count_users_matrix * placement_vector >= np.full(number_of_groups, MINIMUM_SIZE)
 
-    count_male_and_female_matrix = count_male_and_female_matrix*MINIMUM_FEMALE_PROPORTION
+    count_male_and_female_matrix = count_male_and_female_matrix
 
-    female_proportion_constraint = count_female_matrix * placement_vector >= count_male_and_female_matrix * placement_vector
+    min_female_proportion_constraint = count_female_matrix * placement_vector >= MINIMUM_FEMALE_PROPORTION * count_male_and_female_matrix * placement_vector
+
+    max_female_proportion_constraint = count_female_matrix * placement_vector <= MAXIMUM_FEMALE_PROPORTION * count_male_and_female_matrix * placement_vector
 
     objective = cvxpy.Maximize(reward_vector*placement_vector)
 
     problem = cvxpy.Problem(objective, [one_group_constraint, max_users_in_group_constraint,
-                                        min_users_in_group_constraint, female_proportion_constraint])
+                                        min_users_in_group_constraint, min_female_proportion_constraint,
+                                        max_female_proportion_constraint])
 
-    problem.solve(verbose=True, solver=cvxpy.GLPK_MI)
+    problem.solve(verbose=True, solver=cvxpy.GLPK_MI, tm_lim=30000)
 
     for i in range(number_of_users):
         for j in range(number_of_groups):
@@ -129,4 +140,4 @@ def run_assign_groups():
     for g in groups:
         group_members.append(list(g.members.all()))
 
-    print_diagnostics(groups, group_members)
+    print(print_diagnostics(groups, group_members))

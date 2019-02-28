@@ -12,7 +12,7 @@ import json
 import urllib
 
 from .models import Gruppe, Barn, Session
-from .utils import run_assign_groups
+from .utils import run_assign_groups, print_diagnostics
 
 # Create your views here.
 
@@ -115,6 +115,30 @@ def control_panel(request):
     context['session'] = session
     context['exists_active'] = exists_active
     context['number_of_users'] = Barn.objects.count()
+    context['number_of_male_users'] = Barn.objects.filter(gender='male').count()
+    context['number_of_female_users'] = Barn.objects.filter(gender='female').count()
+    try:
+        prop = context['number_of_female_users'] / (context['number_of_male_users'] + context['number_of_female_users'])
+    except ZeroDivisionError:
+        prop = 0
+    context['female_prop'] = "{:.1f}".format(prop*100)
+
+    context['not_placed'] = Barn.objects.filter(given_group=None)
+
+    context['groups'] = Gruppe.objects.all().prefetch_related('members')
+
+    group_members = []
+
+    if context['not_placed'].exists():
+        context['groups'] = Gruppe.objects.all().prefetch_related('pri_1s')
+        for g in context['groups']:
+            group_members.append(list(g.pri_1s.all()))
+    else:
+        context['groups'] = Gruppe.objects.all().prefetch_related('members')
+        for g in context['groups']:
+            group_members.append(list(g.members.all()))
+
+    context['diag'] = print_diagnostics(context['groups'], group_members)
 
     return render(request, 'control_panel.html', context=context)
 
