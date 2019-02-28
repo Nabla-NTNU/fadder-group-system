@@ -97,14 +97,18 @@ def post_choices(request):
                           pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
     try:
         new_fadderbarn.save()
-        return HttpResponseRedirect(reverse('groupfixer:success'))
+
+        context = dict()
+        context['name'] = new_fadderbarn.name
+        context['gender'] = new_fadderbarn.get_gender_display()
+        context['pri_1'] = new_fadderbarn.pri_1.name
+        context['pri_2'] = new_fadderbarn.pri_2.name
+        context['pri_3'] = new_fadderbarn.pri_3.name
+
+        return render(request, 'success.html', context=context)
     except IntegrityError:
         messages.error(request, 'Navnet ditt er ikke unikt! Prøv igjen')
         return HttpResponseRedirect(reverse('groupfixer:main'))
-
-
-def success(request):
-    return render(request, 'success.html')
 
 
 @staff_member_required

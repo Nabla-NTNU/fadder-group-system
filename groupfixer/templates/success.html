@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 style="text-align: center">Svar registrert!</h1>
+    <h1 style="text-align: center">Svar registrert!</h1>
+    <h3>Navn: <i>{{ name }}</i></h3>
+    <h3>Kjønn: <i>{{ gender }}</i></h3>
+    <h3>Førsteprioritet: <i>{{ pri_1 }}</i></h3>
+    <h3>Andreprioritet: <i>{{ pri_2 }}</i></h3>
+    <h3>Tredjeprioritet: <i>{{ pri_3 }}</i></h3>
+
+    <small><p style="text-align: center">Noe galt? Ta kontakt med en administrator.</p></small>
+
 {% endblock content %}

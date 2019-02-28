@@ -1,5 +1,5 @@
 from django.urls import path
-from groupfixer.views import MainPage, post_choices, success, control_panel, deactivate_session, activate_session, \
+from groupfixer.views import MainPage, post_choices, control_panel, deactivate_session, activate_session, \
                              assign_groups, generate_csv
 
 app_name = 'groupfixer'
@@ -11,9 +11,6 @@ urlpatterns = [
     path('post',
          post_choices,
          name='post'),
-    path('success',
-         success,
-         name='success'),
     path(r'control',
          control_panel,
          name='control_panel'),
