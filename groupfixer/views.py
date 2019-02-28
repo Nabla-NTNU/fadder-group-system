@@ -44,16 +44,6 @@ def post_choices(request):
         return HttpResponseRedirect(reverse('groupfixer:main'))
 
     try:
-        session, exists_active = get_active_session(request)
-    except Session.MultipleObjectsReturned:
-        messages.error(request, 'Flere påmeldinger er aktive! Ta kontakt med administrator.')
-        return HttpResponseRedirect(reverse('groupfixer:main'))
-
-    if not exists_active:
-        messages.error(request, 'Ingen aktive påmeldinger.')
-        return HttpResponseRedirect(reverse('groupfixer:main'))
-
-    try:
         ''' Begin reCAPTCHA validation '''
         recaptcha_response = request.POST.get('g-recaptcha-response')
         url = 'https://www.google.com/recaptcha/api/siteverify'
@@ -69,6 +59,16 @@ def post_choices(request):
             messages.error(request, 'Ugyldig reCAPTCHA. Prøv igjen.')
             return HttpResponseRedirect(reverse('groupfixer:main'))
         ''' End reCAPTCHA validation '''
+
+        try:
+            session, exists_active = get_active_session(request)
+        except Session.MultipleObjectsReturned:
+            messages.error(request, 'Flere påmeldinger er aktive! Ta kontakt med administrator.')
+            return HttpResponseRedirect(reverse('groupfixer:main'))
+
+        if not exists_active:
+            messages.error(request, 'Ingen aktive påmeldinger.')
+            return HttpResponseRedirect(reverse('groupfixer:main'))
 
         name = escape(request.POST['name'])
         if name == '':
