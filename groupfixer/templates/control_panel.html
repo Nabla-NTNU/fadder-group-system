@@ -51,6 +51,8 @@ $(document).ready(function(){
             </div>
         {% endif %}
 
+        <div><a href="{% url 'groupfixer:csv' %}"><button class="csv">Eksporter til regneark</button></a></div>
+        <br>
 
         {% for group in groups %}
             <table id="grouptable">

@@ -1,5 +1,6 @@
 from django.urls import path
-from groupfixer.views import MainPage, post_choices, success, control_panel, deactivate_session, activate_session, assign_groups
+from groupfixer.views import MainPage, post_choices, success, control_panel, deactivate_session, activate_session, \
+                             assign_groups, generate_csv
 
 app_name = 'groupfixer'
 
@@ -25,4 +26,7 @@ urlpatterns = [
     path('control/assign',
          assign_groups,
          name='assign_groups'),
+    path('control/export.csv',
+         generate_csv,
+         name='csv'),
 ]

@@ -10,9 +10,12 @@ from django.conf import settings
 
 import json
 import urllib
+import csv
+
+from cvxpy.error import SolverError
 
 from .models import Gruppe, Barn, Session
-from .utils import run_assign_groups, print_diagnostics
+from .utils import run_assign_groups, print_diagnostics, MAXIMUM_SIZE
 
 # Create your views here.
 
@@ -173,6 +176,41 @@ def activate_session(request):
 @staff_member_required
 def assign_groups(request):
     if request.method == 'POST':
-        run_assign_groups()
-
+        try:
+            run_assign_groups()
+        except SolverError:
+            messages.error(request, 'Kunne ikke fordele med gitte betingelser innen gitt tid!')
     return HttpResponseRedirect(reverse('groupfixer:control_panel'))
+
+
+@staff_member_required
+def generate_csv(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv', charset='latin-1')
+    response['Content-Disposition'] = 'attachment; filename="export.csv"'
+
+    writer = csv.writer(response, dialect='excel')
+
+    table = list()
+
+    groups = Gruppe.objects.all().prefetch_related('members')
+    for group in groups:
+        row = list()
+        row.append(group.name)
+        row.append('')
+        members = group.members.all()
+        for i in range(MAXIMUM_SIZE):
+            try:
+                row.append(members[i].name)
+            except IndexError:
+                row.append('')
+        table.append(row)
+        table.append(['']*MAXIMUM_SIZE)
+
+    # Transpose the table
+    table = map(list, zip(*table))
+
+    for row in table:
+        writer.writerow(row)
+
+    return response

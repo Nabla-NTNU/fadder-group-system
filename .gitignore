@@ -1,2 +1,4 @@
 /.idea
 *.sqlite3
+*.whl
+*__pycache__*

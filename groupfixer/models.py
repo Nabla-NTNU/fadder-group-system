@@ -80,6 +80,7 @@ class Barn(models.Model):
     class Meta:
         verbose_name = 'Fadderbarn'
         verbose_name_plural = 'Fadderbarn'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
