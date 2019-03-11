@@ -5,7 +5,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
-  $("#run_alg").click(function(){
+  $("#run_alg").submit(function(){
       $("#loader").fadeIn();
   });
 });
@@ -28,9 +28,11 @@ $(document).ready(function(){
             <button type="submit">Aktiver påmelding</button>
         </form>
         <h4>Antall påmeldte: {{ number_of_users }} ({{ number_of_female_users }} kvinner / {{ number_of_male_users }} menn / {{ female_prop }}%)</h4>
-        <form action="{% url 'groupfixer:assign_groups'%}" method="post">
+        <form action="{% url 'groupfixer:assign_groups'%}" method="post" id="run_alg">
             {% csrf_token %}
-            <button class="option" type="submit" id="run_alg">Fordel på grupper</button>
+            <button class="option" type="submit">Fordel på grupper</button>
+            <div>Gruppestørrelse mellom <input type="number" name="min_size" value="{{ min_size }}" min="0" max="{{ number_of_users }}" maxlength="3"> og <input type="number" name="max_size" value="{{ max_size }}" min="0" max="{{ number_of_users }}" maxlength="3"></div>
+            <div>Jenteandel mellom <input class="float" type="number" name="min_female" value="{{ min_female }}" min="0" max="1" maxlength="3" step="0.01"> og <input type="number" class="float" name="max_female" value="{{ max_female }}" min="0" max="1" maxlength="3" step="0.01"></div>
         </form>
         <br>
         <div class="center-container" id="loader" style="display: none">

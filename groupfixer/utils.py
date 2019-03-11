@@ -53,7 +53,16 @@ def print_diagnostics(groups, members):
     return diag
 
 
-def run_assign_groups():
+def run_assign_groups(contraints):
+
+    global MINIMUM_SIZE
+    MINIMUM_SIZE = contraints['min_size']
+    global MAXIMUM_SIZE
+    MAXIMUM_SIZE = contraints['max_size']
+    global MINIMUM_FEMALE_PROPORTION
+    MINIMUM_FEMALE_PROPORTION = contraints['min_female']
+    global MAXIMUM_FEMALE_PROPORTION
+    MAXIMUM_FEMALE_PROPORTION = contraints['max_female']
 
     groups = Gruppe.objects.all().prefetch_related('pri_1s')
     number_of_groups = len(groups)
@@ -130,11 +139,14 @@ def run_assign_groups():
 
     for i in range(number_of_users):
         for j in range(number_of_groups):
-            if placement_vector.value[i*number_of_groups + j] == 1.0:
-                users[i].given_group = groups[j]
-                users[i].save()
-                break
-
+            try:
+                if placement_vector.value[i*number_of_groups + j] == 1.0:
+                    users[i].given_group = groups[j]
+                    users[i].save()
+                    break
+            except TypeError:
+                raise cvxpy.SolverError
+    
     group_members = []
 
     for g in groups:

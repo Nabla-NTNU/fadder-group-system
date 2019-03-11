@@ -147,6 +147,13 @@ def control_panel(request):
 
     context['diag'] = print_diagnostics(context['groups'], group_members)
 
+    from .utils import MINIMUM_SIZE, MAXIMUM_SIZE, MINIMUM_FEMALE_PROPORTION, MAXIMUM_FEMALE_PROPORTION
+
+    context['min_size'] = MINIMUM_SIZE
+    context['max_size'] = MAXIMUM_SIZE
+    context['min_female'] = MINIMUM_FEMALE_PROPORTION
+    context['max_female'] = MAXIMUM_FEMALE_PROPORTION
+
     return render(request, 'control_panel.html', context=context)
 
 
@@ -181,7 +188,16 @@ def activate_session(request):
 def assign_groups(request):
     if request.method == 'POST':
         try:
-            run_assign_groups()
+            constraints = dict()
+            constraints['min_size'] = int(escape(request.POST['min_size']))
+            constraints['max_size'] = int(escape(request.POST['max_size']))
+            constraints['min_female'] = float(escape(request.POST['min_female']))
+            constraints['max_female'] = float(escape(request.POST['max_female']))
+        except (KeyError, ValueError):
+            messages.error(request, 'Ugyldige instilliger. Prøv igjen.')
+            return HttpResponseRedirect(reverse('groupfixer:control_panel'))
+        try:
+            run_assign_groups(constraints)
         except SolverError:
             messages.error(request, 'Kunne ikke fordele med gitte betingelser innen gitt tid!')
     return HttpResponseRedirect(reverse('groupfixer:control_panel'))
