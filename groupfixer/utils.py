@@ -53,16 +53,16 @@ def print_diagnostics(groups, members):
     return diag
 
 
-def run_assign_groups(contraints):
+def run_assign_groups(constraints):
 
     global MINIMUM_SIZE
-    MINIMUM_SIZE = contraints['min_size']
+    MINIMUM_SIZE = constraints['min_size']
     global MAXIMUM_SIZE
-    MAXIMUM_SIZE = contraints['max_size']
+    MAXIMUM_SIZE = constraints['max_size']
     global MINIMUM_FEMALE_PROPORTION
-    MINIMUM_FEMALE_PROPORTION = contraints['min_female']
+    MINIMUM_FEMALE_PROPORTION = constraints['min_female']
     global MAXIMUM_FEMALE_PROPORTION
-    MAXIMUM_FEMALE_PROPORTION = contraints['max_female']
+    MAXIMUM_FEMALE_PROPORTION = constraints['max_female']
 
     groups = Gruppe.objects.all().prefetch_related('pri_1s')
     number_of_groups = len(groups)
@@ -146,7 +146,7 @@ def run_assign_groups(contraints):
                     break
             except TypeError:
                 raise cvxpy.SolverError
-    
+
     group_members = []
 
     for g in groups:

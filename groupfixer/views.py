@@ -11,6 +11,7 @@ from django.conf import settings
 import json
 import urllib
 import csv
+from math import ceil, floor
 
 from cvxpy.error import SolverError
 
@@ -153,6 +154,11 @@ def control_panel(request):
     context['max_size'] = MAXIMUM_SIZE
     context['min_female'] = MINIMUM_FEMALE_PROPORTION
     context['max_female'] = MAXIMUM_FEMALE_PROPORTION
+
+    context['female_prop_ratio'] = "{:.2f}".format(prop)
+    context['average_per_group_floor'] = int(floor(context['number_of_users']/len(context['groups'])))
+    context['average_per_group_ceil'] = int(ceil(context['number_of_users']/len(context['groups'])))
+
 
     return render(request, 'control_panel.html', context=context)
 
