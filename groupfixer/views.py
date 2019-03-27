@@ -16,9 +16,8 @@ from math import ceil, floor
 from cvxpy.error import SolverError
 
 from .models import Gruppe, Barn, Session
-from .utils import run_assign_groups, print_diagnostics, MAXIMUM_SIZE
-
-# Create your views here.
+from .utils import run_assign_groups, print_diagnostics, \
+    DEFAULT_MINIMUM_SIZE, DEFAULT_MAXIMUM_SIZE, DEFAULT_MINIMUM_FEMALE_PROPORTION, DEFAULT_MAXIMUM_FEMALE_PROPORTION
 
 
 def get_active_session(request):
@@ -146,19 +145,16 @@ def control_panel(request):
         for g in context['groups']:
             group_members.append(list(g.members.all()))
 
-    context['diag'] = print_diagnostics(context['groups'], group_members)
+    context['min_size'] = request.session.get('min_size', DEFAULT_MINIMUM_SIZE)
+    context['max_size'] = request.session.get('max_size', DEFAULT_MAXIMUM_SIZE)
+    context['min_female'] = request.session.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
+    context['max_female'] = request.session.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
 
-    from .utils import MINIMUM_SIZE, MAXIMUM_SIZE, MINIMUM_FEMALE_PROPORTION, MAXIMUM_FEMALE_PROPORTION
-
-    context['min_size'] = MINIMUM_SIZE
-    context['max_size'] = MAXIMUM_SIZE
-    context['min_female'] = MINIMUM_FEMALE_PROPORTION
-    context['max_female'] = MAXIMUM_FEMALE_PROPORTION
+    context['diag'] = print_diagnostics(context['groups'], group_members, request.session)
 
     context['female_prop_ratio'] = "{:.2f}".format(prop)
     context['average_per_group_floor'] = int(floor(context['number_of_users']/len(context['groups'])))
     context['average_per_group_ceil'] = int(ceil(context['number_of_users']/len(context['groups'])))
-
 
     return render(request, 'control_panel.html', context=context)
 
@@ -194,16 +190,15 @@ def activate_session(request):
 def assign_groups(request):
     if request.method == 'POST':
         try:
-            constraints = dict()
-            constraints['min_size'] = int(escape(request.POST['min_size']))
-            constraints['max_size'] = int(escape(request.POST['max_size']))
-            constraints['min_female'] = float(escape(request.POST['min_female']))
-            constraints['max_female'] = float(escape(request.POST['max_female']))
+            request.session['min_size'] = int(escape(request.POST['min_size']))
+            request.session['max_size'] = int(escape(request.POST['max_size']))
+            request.session['min_female'] = float(escape(request.POST['min_female']))
+            request.session['max_female'] = float(escape(request.POST['max_female']))
         except (KeyError, ValueError):
             messages.error(request, 'Ugyldige instilliger. Prøv igjen.')
             return HttpResponseRedirect(reverse('groupfixer:control_panel'))
         try:
-            run_assign_groups(constraints)
+            run_assign_groups(request.session)
         except SolverError:
             messages.error(request, 'Kunne ikke fordele med gitte betingelser innen gitt tid!')
     return HttpResponseRedirect(reverse('groupfixer:control_panel'))
@@ -220,18 +215,20 @@ def generate_csv(request):
     table = list()
 
     groups = Gruppe.objects.all().prefetch_related('members')
+    maximum_size = max([g.members.count() for g in groups])
+
     for group in groups:
         row = list()
         row.append(group.name)
         row.append('')
         members = group.members.all()
-        for i in range(MAXIMUM_SIZE):
+        for i in range(maximum_size):
             try:
                 row.append(members[i].name)
             except IndexError:
                 row.append('')
         table.append(row)
-        table.append(['']*MAXIMUM_SIZE)
+        table.append(['']*maximum_size)
 
     # Transpose the table
     table = map(list, zip(*table))
