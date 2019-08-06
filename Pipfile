@@ -13,3 +13,6 @@ pymysql = "*"
 
 [requires]
 python_version = "3.6"
+
+[scripts]
+production = "gunicorn --config /etc/websites/fadder/gunicorn.conf fadder.wsgi:application"
