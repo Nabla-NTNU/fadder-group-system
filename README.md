@@ -17,6 +17,7 @@ Alle fadderbarnene blir bedt på index-siden om å oppgi navn, kjønn og velge 3
 Vi vil maksimere en funksjon basert på ønskene til fadderbarnene. Slik vi har definert det så blir 10 poeng gitt for hvert fadderbarn som får sitt førstevalg, 8 poeng for hvert andrevalg, 5 poeng for hvert tredjevalg og 0 poeng ellers. Hvis det er plass til alle på førstevalgene så er den optimale fordelingen triviell, men ellers må en ["branch and bound"](https://en.wikipedia.org/wiki/Branch_and_bound) algoritme brukes.
 
 For `N` fadderbarn og `M` faddergrupper bruker vi en `N x M` lang binær valgvektor (eg. `x = [0,0,0,1,0, 0,0,1,0,0, ...]`), hvor vi ønsker å maksimere prikkproduktet med en poengvektor vi konstruerer fra prioriteringene (eg. `c = [5,0,0,10,8, 8,0,10,5,0, ...]`). Optimeringen blir gjort med hensyn begresninger slik at
+
 * hvert fadderbarn er plassert i kun én gruppe (`Ax = [1,1,1,1,...]` hvor `A` er en matrise som teller hvor mange grupper hver fadderbarn er i),
 * hver faddergruppe er innenfor størrelseskravet (eg. `Bx <= [20,20,20,...]` og `Bx >= [10,10,10,...]` hvor `B` er en matrise som teller antall barn i hver faddergruppe),
 * hver faddergruppe er innenfor kjønnsfordelingskravet (eg. `Cx <= 0.65*Dx` og `Cx >= 0.35*Dx` hvor `C` er en matrise som teller antall kvinner og `D` er en matrise som teller antall kvinner og menn i hver gruppe. Vi eksluderer altså fadderbarnene som ikke har oppgitt kjønn/valg annet fra beregningene).
