@@ -10,7 +10,7 @@ Påmeldingsskjemaet bruker Google reCAPTCHA v2 Invisible, så man trenger en sit
 
 ## Fordelingsmetoden
 
-Alle fadderbarnene blir bedt på index-siden om å oppgi navn, kjønn og velge 3 faddergrupper i prioritert rekkefølge. Etter påmeldingen er stengt av administrator fra kontrollpanelet (på URL-bane `/control`) blir fadderbanene delt inn med hensyn på min/max gruppestørrelse og kjønnsfordeling. Dette optimeres som et integer programming (IP) problem.
+Alle fadderbarnene blir bedt på index-siden om å oppgi navn, kjønn og velge 3 faddergrupper i prioritert rekkefølge. Etter påmeldingen er stengt av administrator fra kontrollpanelet (på URL-bane `/control`) blir fadderbanene delt inn med hensyn på min/max gruppestørrelse og kjønnsfordeling. Dette optimeres som et [integer programming (IP)](https://en.wikipedia.org/wiki/Integer_programming) problem.
 
 ###Optimeringsalgoritme
 
