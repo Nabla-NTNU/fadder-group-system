@@ -9,7 +9,7 @@ from django.db import IntegrityError
 from django.conf import settings
 
 import json
-import urllib
+from urllib import parse, request
 import csv
 from math import ceil, floor
 
@@ -54,9 +54,9 @@ def post_choices(http_request):
             'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
             'response': recaptcha_response
         }
-        data = urllib.parse.urlencode(values).encode()
-        req = urllib.request.Request(url, data=data)
-        response = urllib.request.urlopen(req)
+        data = parse.urlencode(values).encode()
+        req = request.Request(url, data=data)
+        response = request.urlopen(req)
         result = json.loads(response.read().decode())
         if not result['success']:
             messages.error(http_request, 'Ugyldig reCAPTCHA. Prøv igjen.')
@@ -112,12 +112,12 @@ def post_choices(http_request):
 
 
 @staff_member_required
-def control_panel(request):
+def control_panel(http_request):
     context = dict()
     try:
-        session, exists_active = get_active_session(request)
+        session, exists_active = get_active_session(http_request)
     except Session.MultipleObjectsReturned:
-        messages.error(request, 'Mer enn en aktiv påmelding! Fiks dette først')
+        messages.error(http_request, 'Mer enn en aktiv påmelding! Fiks dette først')
         return HttpResponseRedirect(reverse('admin:groupfixer_session_changelist'))
     context['session'] = session
     context['exists_active'] = exists_active
@@ -145,67 +145,67 @@ def control_panel(request):
         for g in context['groups']:
             group_members.append(list(g.members.all()))
 
-    context['min_size'] = request.session.get('min_size', DEFAULT_MINIMUM_SIZE)
-    context['max_size'] = request.session.get('max_size', DEFAULT_MAXIMUM_SIZE)
-    context['min_female'] = request.session.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
-    context['max_female'] = request.session.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
+    context['min_size'] = http_request.session.get('min_size', DEFAULT_MINIMUM_SIZE)
+    context['max_size'] = http_request.session.get('max_size', DEFAULT_MAXIMUM_SIZE)
+    context['min_female'] = http_request.session.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
+    context['max_female'] = http_request.session.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
 
-    context['diag'] = print_diagnostics(context['groups'], group_members, request.session)
+    context['diag'] = print_diagnostics(context['groups'], group_members, http_request.session)
 
     context['female_prop_ratio'] = "{:.2f}".format(prop)
     context['average_per_group_floor'] = int(floor(context['number_of_users']/len(context['groups'])))
     context['average_per_group_ceil'] = int(ceil(context['number_of_users']/len(context['groups'])))
 
-    return render(request, 'control_panel.html', context=context)
+    return render(http_request, 'control_panel.html', context=context)
 
 
 @staff_member_required
-def deactivate_session(request):
-    if request.method == 'POST':
+def deactivate_session(http_request):
+    if http_request.method == 'POST':
         try:
-            session, exists_active = get_active_session(request)
+            session, exists_active = get_active_session(http_request)
         except Session.MultipleObjectsReturned:
-            messages.error(request, 'Mer enn en aktiv påmelding! Fiks dette først')
+            messages.error(http_request, 'Mer enn en aktiv påmelding! Fiks dette først')
             return HttpResponseRedirect(reverse('admin:groupfixer_session_changelist'))
 
         if not exists_active:
-            messages.error(request, 'Ingen aktive påmeldinger')
+            messages.error(http_request, 'Ingen aktive påmeldinger')
         else:
             session.active = False
             session.save()
-            messages.success(request, 'Påmelding deaktivert')
+            messages.success(http_request, 'Påmelding deaktivert')
     return HttpResponseRedirect(reverse('groupfixer:control_panel'))
 
 
 @staff_member_required
-def activate_session(request):
-    if request.method == 'POST':
+def activate_session(http_request):
+    if http_request.method == 'POST':
         session = Session()
         session.save()
-        messages.success(request, 'Påmelding aktivert')
+        messages.success(http_request, 'Påmelding aktivert')
     return HttpResponseRedirect(reverse('groupfixer:control_panel'))
 
 
 @staff_member_required
-def assign_groups(request):
-    if request.method == 'POST':
+def assign_groups(http_request):
+    if http_request.method == 'POST':
         try:
-            request.session['min_size'] = int(escape(request.POST['min_size']))
-            request.session['max_size'] = int(escape(request.POST['max_size']))
-            request.session['min_female'] = float(escape(request.POST['min_female']))
-            request.session['max_female'] = float(escape(request.POST['max_female']))
+            http_request.session['min_size'] = int(escape(http_request.POST['min_size']))
+            http_request.session['max_size'] = int(escape(http_request.POST['max_size']))
+            http_request.session['min_female'] = float(escape(http_request.POST['min_female']))
+            http_request.session['max_female'] = float(escape(http_request.POST['max_female']))
         except (KeyError, ValueError):
-            messages.error(request, 'Ugyldige instilliger. Prøv igjen.')
+            messages.error(http_request, 'Ugyldige instilliger. Prøv igjen.')
             return HttpResponseRedirect(reverse('groupfixer:control_panel'))
         try:
-            run_assign_groups(request.session)
+            run_assign_groups(http_request.session)
         except SolverError:
-            messages.error(request, 'Kunne ikke fordele med gitte betingelser innen gitt tid!')
+            messages.error(http_request, 'Kunne ikke fordele med gitte betingelser innen gitt tid!')
     return HttpResponseRedirect(reverse('groupfixer:control_panel'))
 
 
 @staff_member_required
-def generate_csv(request):
+def generate_csv(http_request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv', charset='latin-1')
     response['Content-Disposition'] = 'attachment; filename="export.csv"'
