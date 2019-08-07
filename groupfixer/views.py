@@ -228,7 +228,8 @@ def generate_csv(http_request):
             except IndexError:
                 row.append('')
         table.append(row)
-        table.append(['']*maximum_size)
+        # Insert empty column between groups
+        table.append(['']*(maximum_size + 2))
 
     # Transpose the table
     table = map(list, zip(*table))
