@@ -12,7 +12,7 @@ Påmeldingsskjemaet bruker Google reCAPTCHA v2 Invisible, så man trenger en sit
 
 Alle fadderbarnene blir bedt på index-siden om å oppgi navn, kjønn og velge 3 faddergrupper i prioritert rekkefølge. Etter påmeldingen er stengt av administrator fra kontrollpanelet (på URL-bane `/control`) blir fadderbanene delt inn med hensyn på min/max gruppestørrelse og kjønnsfordeling. Dette optimeres som et [integer programming (IP)](https://en.wikipedia.org/wiki/Integer_programming) problem.
 
-###Optimeringsalgoritme
+### Optimeringsalgoritme
 
 Vi vil maksimere en funksjon basert på ønskene til fadderbarnene. Slik vi har definert det så blir 10 poeng gitt for hvert fadderbarn som får sitt førstevalg, 8 poeng for hvert andrevalg, 5 poeng for hvert tredjevalg og 0 poeng ellers. Hvis det er plass til alle på førstevalgene så er den optimale fordelingen triviell, men ellers må en ["branch and bound"](https://en.wikipedia.org/wiki/Branch_and_bound) algoritme brukes.
 
@@ -22,11 +22,11 @@ For `N` fadderbarn og `M` faddergrupper bruker vi en `N x M` lang binær valgvek
 * hver faddergruppe er innenfor størrelseskravet (eg. `Bx <= [20,20,20,...]` og `Bx >= [10,10,10,...]` hvor `B` er en matrise som teller antall barn i hver faddergruppe),
 * hver faddergruppe er innenfor kjønnsfordelingskravet (eg. `Cx <= 0.65*Dx` og `Cx >= 0.35*Dx` hvor `C` er en matrise som teller antall kvinner og `D` er en matrise som teller antall kvinner og menn i hver gruppe. Vi eksluderer altså fadderbarnene som ikke har oppgitt kjønn/valg annet fra beregningene).
 
-###Implementasjon
+### Implementasjon
 
 Dette problemet forumleres  ved hjelp av `numpy`-matriser/vektorer og `cvxpy` og sendes til GLPK for å finne en løsning. Dette løses typisk ganske raskt (i løpet av et par sekunder), men den kan også ende opp med en eksponensielt økende mengde noder som må undersøkes. Dette er ikke så farlig, ettersom vi kun gir GLPK 30 sekunder på å løse problemet, og på den tiden vil den alltid ha funnet en løsning som ligger svært tett opp mot den øvre grensen.
 
-###Eksportering av fordeling
+### Eksportering av fordeling
 
 Fordelingen presenteres i kontrollpanelet, hvor man kan se hvilken priotiering hvert fadderbarn fikk. Gruppene kan også eksporteres som et `.csv`-regneark ved å trykke på "Eksporter til regneark".
 
