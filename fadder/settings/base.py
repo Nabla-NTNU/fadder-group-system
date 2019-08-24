@@ -19,10 +19,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '84ww8josb7f4fa!mm_&_6-mbs2=g*e4mn1#^qq#5jz57!5-(*4'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..", "..")
-GOOGLE_RECAPTCHA_SECRET_KEY  = "6Lf7WZIUAAAAAPw4FyORP0fWOsec2t7sp-MAaquM"
+GOOGLE_RECAPTCHA_SECRET_KEY  = os.environ.get("GOOGLE_RECAPTCHA_SECRET_KEY")
+GOOGLE_RECAPTCHA_SITE_KEY = os.environ.get("GOOGLE_RECAPTCHA_SITE_KEY")
 
 VARIABLE_ROOT = os.environ.get("VARIABLE_ROOT", PROJECT_ROOT)
 

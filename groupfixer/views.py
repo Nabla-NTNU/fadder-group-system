@@ -38,6 +38,7 @@ class MainPage(TemplateView):
         context = super().get_context_data(**kwargs)
         context['groups'] = Gruppe.objects.all()
         context['genders'] = Barn.GENDERS
+        context['google_recaptcha_data_sitekey'] = settings.GOOGLE_RECAPTCHA_SITE_KEY
         return context
 
 
