@@ -56,7 +56,7 @@
     {% endfor %}
     </select>
     <br>
-    <button class="g-recaptcha" data-sitekey="{{ google_recaptcha_data_sitekey }}" data-callback='onSubmit'>Send</button>
+    <button class="g-recaptcha" data-sitekey="{{ google_recaptcha_data_sitekey|safe}}" data-callback='onSubmit'>Send</button>
     </form>
     <small class="notice">This site is protected by reCAPTCHA and the Google
     <a href="https://policies.google.com/privacy">Privacy Policy</a> and
