@@ -20,7 +20,7 @@ For `N` fadderbarn og `M` faddergrupper bruker vi en `N x M` lang binær valgvek
 
 * hvert fadderbarn er plassert i kun én gruppe (`Ax = [1,1,1,1,...]` hvor `A` er en matrise som teller hvor mange grupper hver fadderbarn er i),
 * hver faddergruppe er innenfor størrelseskravet (eg. `Bx <= [20,20,20,...]` og `Bx >= [10,10,10,...]` hvor `B` er en matrise som teller antall barn i hver faddergruppe),
-* hver faddergruppe er innenfor kjønnsfordelingskravet (eg. `Cx <= 0.65*Dx` og `Cx >= 0.35*Dx` hvor `C` er en matrise som teller antall kvinner og `D` er en matrise som teller antall kvinner og menn i hver gruppe. Vi eksluderer altså fadderbarnene som ikke har oppgitt kjønn/valg annet fra beregningene).
+* hver faddergruppe er innenfor kjønnsfordelingskravet (eg. `Cx <= 0.65*Dx` og `Cx >= 0.35*Dx` hvor `C` er en matrise som teller antall kvinner og `D` er en matrise som teller antall kvinner og menn i hver gruppe. Vi eksluderer altså fadderbarnene som ikke har oppgitt kjønn/valgt annet fra beregningene).
 
 ### Implementasjon
 
