@@ -12,6 +12,12 @@ ALLOWED_HOSTS = ['fadder.nabla.no', '127.0.0.1']
 
 DEBUG = bool(env.get('DEBUG', False))
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+GOOGLE_RECAPTCHA_SECRET_KEY  = os.environ.get("GOOGLE_RECAPTCHA_SECRET_KEY")
+GOOGLE_RECAPTCHA_SITE_KEY = os.environ.get("GOOGLE_RECAPTCHA_SITE_KEY")
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
