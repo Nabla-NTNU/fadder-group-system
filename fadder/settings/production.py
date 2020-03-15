@@ -6,7 +6,6 @@ from os import environ as env
 import pymysql
 from .base import *
 
-pymysql.install_as_MySQLdb()
 
 ALLOWED_HOSTS = ['fadder.nabla.no', '127.0.0.1']
 

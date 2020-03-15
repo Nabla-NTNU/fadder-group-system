@@ -10,6 +10,7 @@ cvxopt = "==1.2.*"
 cvxpy = "==1.0.*"
 pymysql = "*"
 gunicorn = "*"
+mysqlclient = "*"
 
 [dev-packages]
 
