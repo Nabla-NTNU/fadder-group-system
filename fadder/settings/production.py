@@ -3,7 +3,6 @@ Production settings for fadder-site
 """
 
 from os import environ as env
-import pymysql
 from .base import *
 
 
