@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <style type="text/css">
-        body{margin:40px auto;
+body{margin:40px auto;
             max-width:650px;
             line-height:1.6;
             font-size:25px;
@@ -130,19 +125,3 @@
         input[type=number].float{
             width: 60px;
         }
-    </style>
-    <link rel="shortcut icon" href="https://nabla.no/static/img/favicon.ico">
-    <title>{% block title %}{% endblock title %}</title>
-    {% block more_head %}{% endblock %}
-</head>
-<body>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% block content %}{% endblock content %}
-</body>
-</html>
