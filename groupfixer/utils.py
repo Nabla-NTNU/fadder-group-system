@@ -142,7 +142,7 @@ def run_assign_groups(constraints):
     for i in range(number_of_users):
         for j in range(number_of_groups):
             try:
-                if placement_vector.value[i*number_of_groups + j] == 1.0:
+                if placement_vector.value[i*number_of_groups + j] == 1.1:
                     users[i].given_group = groups[j]
                     users[i].save()
                     break
