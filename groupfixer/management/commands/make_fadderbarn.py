@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 from django.conf import settings
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from ...models import Barn, Gruppe
 
@@ -45,14 +44,20 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-n', type=int, default=120, required=False, dest='kull_size')
         parser.add_argument('-p', type=float, default=0.4, required=False, dest='female_proportion')
+        parser.add_argument('--force', action='store_true')
+        parser.add_argument('--silent', action='store_true')
 
     def handle(self, *args, **kwargs):
         total_number = kwargs['kull_size']
         female_proportion = kwargs['female_proportion']
 
-        if not settings.DEBUG:
+        if not settings.DEBUG and not kwargs['force']:
             self.stdout.write('You are not in DEBUG!')
             return
+
+        if kwargs['silent']:
+            self.stdout.write = lambda s: None
+
         self.stdout.write('Deleting existing fadderbarn\n')
         Barn.objects.all().delete()
         self.stdout.write('Success!\n\n')
@@ -89,8 +94,9 @@ class Command(BaseCommand):
 
             while True:
                 try:
-                    Barn.objects.create(name=name, gender=gender,
-                                        pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
+                    with transaction.atomic():
+                        Barn.objects.create(name=name, gender=gender,
+                                            pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
                     break
                 except IntegrityError:
                     name = name + ' jr.'
