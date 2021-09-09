@@ -27,6 +27,9 @@
     <h3>Ditt navn (fornavn og etternavn):</h3>
         <input type="text" name="name">
 
+    <h3>Ditt NTNU brukernavn:</h3>
+        <input type="text" name="ntnu_username">
+
     <h3>Ditt kjønn:</h3>
     {% for gender in genders %}
         <input type="radio" name="gender" id="{{ gender.0 }}" value="{{ gender.0 }}">
