@@ -31,6 +31,13 @@ class Barn(models.Model):
         unique=True,
     )
 
+    ntnu_username = models.CharField(
+        verbose_name='NTNU-brukernavn',
+        blank=False,
+        max_length=10,
+        unique=True,
+    )
+
     GENDERS = (
         ('female', 'Kvinne'),
         ('male', 'Mann'),
