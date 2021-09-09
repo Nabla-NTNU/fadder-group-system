@@ -43,16 +43,18 @@ $(document).ready(function(){
         <div class="center-container">
             <textarea readonly rows="10" style="width: 100%">{{ diag }}</textarea>
         </div>
-        <br>
-        {% if not_placed %}
-            <div>Ikke fordelt:
-            <ul>
-                {% for barn in not_placed %}
-                <li>{{ barn.name }}</li>
-                {% endfor %}
-            </ul>
-            </div>
-        {% endif %}
+
+        <ul></ul>
+        <div style="background-color:rgb(243, 200, 9);"> <b>Utenfor prioritet:</b></div>
+        {% for barn in all_fadderbarn %}
+        {% if barn.pri_1 != barn.given_group %}
+            {% if barn.pri_2 != barn.given_group %}
+                {% if barn.pri_3 != barn.given_group %}
+                    <li style="background-color:rgb(243, 200, 9);">{{barn.name}}</li>
+                    {% endif %}
+                    {% endif %}
+                    {% endif %}
+        {% endfor %}
 
         <div><a href="{% url 'groupfixer:csv' %}"><button class="csv">Eksporter til regneark</button></a></div>
         <br>

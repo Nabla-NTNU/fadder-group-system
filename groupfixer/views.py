@@ -150,6 +150,8 @@ def control_panel(http_request):
 
     context['not_placed'] = Barn.objects.filter(given_group=None)
 
+    context['all_fadderbarn'] = Barn.objects.all()
+
     context['groups'] = Gruppe.objects.all().prefetch_related('members')
 
     group_members = []
