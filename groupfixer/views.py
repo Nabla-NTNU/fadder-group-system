@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.html import escape
 from django.db import IntegrityError
 from django.conf import settings
-
+from django.db.models import F
 import json
 from urllib import parse, request
 import csv
@@ -150,7 +150,12 @@ def control_panel(http_request):
 
     context['not_placed'] = Barn.objects.filter(given_group=None)
 
-    context['all_fadderbarn'] = Barn.objects.all()
+    # This can probably be done much more elegantly, feel free to change
+    context['not_priorities'] = (Barn.objects
+                                 .exclude(given_group=F('pri_1'))
+                                 .exclude(given_group=F('pri_2'))
+                                 .exclude(given_group=F('pri_3'))
+                                 )  # Did not get any of their preferred groups
 
     context['groups'] = Gruppe.objects.all().prefetch_related('members')
 

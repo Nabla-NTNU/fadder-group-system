@@ -28,7 +28,7 @@ class Gruppe(models.Model):
             .order_by("gender")
             .annotate(num=models.Count("gender"))
         )
-        count_dict = {gender: 0 for gender in Barn.GENDERS}
+        count_dict = {gender[0]: 0 for gender in Barn.GENDERS}
         for gender, count in gender_count:
             count_dict[gender] = count
         return count_dict
