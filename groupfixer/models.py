@@ -21,6 +21,29 @@ class Gruppe(models.Model):
     def __str__(self):
         return self.name
 
+    def get_gender_count(self):
+        """Return dict with number of each gender"""
+        gender_count = (
+            self.members.values_list("gender")
+            .order_by("gender")
+            .annotate(num=models.Count("gender"))
+        )
+        count_dict = {gender: 0 for gender in Barn.GENDERS}
+        for gender, count in gender_count:
+            count_dict[gender] = count
+        return count_dict
+
+    def get_female_prop(self):
+        gender_count = self.get_gender_count()
+        try:
+            return gender_count['female'] / (gender_count['female'] + gender_count['male'])
+        except ZeroDivisionError:
+            # No members yet
+            return 0
+
+    def member_count(self):
+        return self.members.count()
+
 
 class Barn(models.Model):
 
@@ -91,7 +114,6 @@ class Barn(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Session(models.Model):
 

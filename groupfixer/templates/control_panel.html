@@ -23,6 +23,16 @@ $(document).ready(function(){
             {% csrf_token %}
             <button class="deactivate" type="submit">Deaktiver påmelding</button>
         </form>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li
+                        {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     {% else %}
         <form action="{% url 'groupfixer:activate_session' %}" method="post">
             {% csrf_token %}
@@ -36,9 +46,97 @@ $(document).ready(function(){
             <div>Jenteandel mellom <input class="float" type="number" name="min_female" value="{{ min_female }}" min="0" max="{{ female_prop_ratio }}" maxlength="3" step="0.01"> og <input type="number" class="float" name="max_female" value="{{ max_female }}" min="{{ female_prop_ratio }}" max="1" maxlength="3" step="0.01"></div>
         </form>
         <br>
+        <style>
+         #graphical_constraints {}
+         #graphical_constraints .interval {
+             position: relative;
+         }
+         #graphical_constraints .interval::before {
+             content: "";
+             display: block;
+             width: 100%;
+             border-top: 1px solid black;
+             top: 5px;
+             position: absolute;
+         }
+         #graphical_constraints .interval__item {
+             position: absolute;
+             width: 10px;
+             height: 10px;
+             border-radius: 5px;
+             background: red;
+             top: 0;
+             margin-left: -5px;  /* Compensate for radius */
+         }
+         #graphical_constraints .interval__limit {
+             position: absolute;
+             width: 0px;
+             height: 20px;
+             margin-top: -5px;
+             border-left: 2px solid black;
+             top: 0;
+         }
+         #graphical_constraints .interval__limit .label {
+             font-size: small;
+             white-space: nowrap;
+             margin-left: -20px;
+         }
+        </style>
+        <div id="graphical_constraints">
+            Female ratio:
+            <div class="interval">
+                <div class="interval__limit"
+                     style="left: {% widthratio min_female 1 100 %}%">
+                    <span class="label">Min: {{ min_female }}</span>
+                </div>
+                <div class="interval__limit"
+                     style="left: {% widthratio max_female 1 100 %}%">
+                    <span class="label">Max: {{ max_female }}</span>
+                </div>
+                {% for group in groups %}
+                    {% with female_ratio=group.get_female_prop %}
+                        <div class="interval__item"
+                             style="left: {% widthratio female_ratio 1 100 %}%"
+                             title="{{ group.name }} : {{ female_ratio|floatformat:2 }}">
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+            <!--  -->
+            <br />
+            Group size:
+            <div class="interval">
+                <div class="interval__limit"
+                     style="left: {% widthratio min_size 30 100 %}%">
+                    <span class="label">Min: {{ min_size }}</span>
+                </div>
+                <div class="interval__limit"
+                     style="left: {% widthratio max_size 30 100 %}%">
+                    <span class="label">Max: {{ max_size }}</span>
+                </div>
+                {% for group in groups %}
+                    {% with female_ratio=group.member_count %}
+                        <div class="interval__item"
+                             style="left: {% widthratio female_ratio 30 100 %}%"
+                             title="{{ group.name }} : {{ female_ratio }}">
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </div>
+        <br>
         <div class="center-container" id="loader" style="display: none">
             <div class="loader"></div>
         </div>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li
+                        {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         <br>
         <div class="center-container">
             <textarea readonly rows="10" style="width: 100%">{{ diag }}</textarea>
