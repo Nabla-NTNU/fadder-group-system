@@ -120,18 +120,18 @@ def run_assign_groups(constraints):
 
     # Creating constraint equations
 
-    one_group_constraint = count_groups_matrix * placement_vector == np.ones(number_of_users)
+    one_group_constraint = count_groups_matrix @ placement_vector == np.ones(number_of_users)
 
-    max_users_in_group_constraint = count_users_matrix * placement_vector <= np.full(number_of_groups, maximum_size)
-    min_users_in_group_constraint = count_users_matrix * placement_vector >= np.full(number_of_groups, minimum_size)
+    max_users_in_group_constraint = count_users_matrix @ placement_vector <= np.full(number_of_groups, maximum_size)
+    min_users_in_group_constraint = count_users_matrix @ placement_vector >= np.full(number_of_groups, minimum_size)
 
     count_male_and_female_matrix = count_male_and_female_matrix
 
-    min_female_proportion_constraint = count_female_matrix * placement_vector >= minimum_female_proportion * count_male_and_female_matrix * placement_vector
+    min_female_proportion_constraint = count_female_matrix @ placement_vector >= minimum_female_proportion * count_male_and_female_matrix @ placement_vector
 
-    max_female_proportion_constraint = count_female_matrix * placement_vector <= maximum_female_proportion * count_male_and_female_matrix * placement_vector
+    max_female_proportion_constraint = count_female_matrix @ placement_vector <= maximum_female_proportion * count_male_and_female_matrix @ placement_vector
 
-    objective = cvxpy.Maximize(reward_vector*placement_vector)
+    objective = cvxpy.Maximize(reward_vector@placement_vector)
 
     problem = cvxpy.Problem(objective, [one_group_constraint, max_users_in_group_constraint,
                                         min_users_in_group_constraint, min_female_proportion_constraint,
