@@ -4,6 +4,9 @@ Dette er Nablas system for automatisk fordeling til faddergruppene basert på fa
 
 ## Installasjon
 
+MERK: `pipenv` og `cvxopt` kan være litt vanskelige sammen.
+Hvis du har problemer med `pipenv lock` eller `pipenv install` eller lignende, prøv å oppdatere `setuptools` først (f.eks. `pip install --upgrade setuptools`).
+
 Prosjektet bruker [Pipfile](https://github.com/pypa/pipfile), slik at alle nødvendige Python-pakker blir installert vha. `pipenv install`. Det eneste som kan være litt vrient er å få med GLPK-støtte. Dette burde inkluderes med `cvxopt` både for Windows og Linux, men på Windows ser det ut som man også trenger en `numpy+mkl` binary. Dette kan skaffes f.eks. [her](https://www.lfd.uci.edu/~gohlke/pythonlibs/).
 
 Påmeldingsskjemaet bruker Google reCAPTCHA v2 Invisible, så man trenger en site key og secret key i en `.env` fil som lastes in i `settings/base.py`. Dette kan skaffes fra https://www.google.com/recaptcha/admin/. 
