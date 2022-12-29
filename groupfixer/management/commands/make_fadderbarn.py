@@ -82,8 +82,6 @@ class Command(BaseCommand):
             else:
                 name = fake.name()
 
-            username = ''.join(filter(str.isalpha, name))
-
             pri_1 = get_weighted_pick(groups, popularity)
 
             pri_2 = pri_1
@@ -97,13 +95,11 @@ class Command(BaseCommand):
             while True:
                 try:
                     with transaction.atomic():
-                        Barn.objects.create(name=name, gender=gender, pri_1=pri_1,
-                                            pri_2=pri_2, pri_3=pri_3,
-                                            ntnu_username=username)
+                        Barn.objects.create(name=name, gender=gender,
+                                            pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
                     break
                 except IntegrityError:
                     name = name + ' jr.'
-                    username = ''.join(filter(str.isalpha, name))
             self.stdout.write('Created {}\n'.format(name))
 
         self.stdout.write('\n\n')
