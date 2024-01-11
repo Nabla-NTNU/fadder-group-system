@@ -4,100 +4,103 @@
 {% block title %}Faddergrupper{% endblock %}
 
 {% block more_head %}
-    <script src="{% static 'js/jquery-3.6.4.min.js' %}"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <script>
-       function onSubmit(token) {
-         document.getElementById("fadderbarn-form").submit();
-       }
-     </script>
-    <style type="text/css">
-        .grecaptcha-badge {
-        visibility: hidden;
-}
-    </style>
+<script src="{% static 'js/jquery-3.6.4.min.js' %}"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+  function onSubmit(token) {
+    document.getElementById("fadderbarn-form").submit();
+  }
+</script>
+<style type="text/css">
+  .grecaptcha-badge {
+    visibility: hidden;
+  }
+</style>
 {% endblock %}
 
 
 {% block content %}
-    <header><h1>Velg din faddergruppe</h1></header>
+<header>
+  <h1>Velg bedrift</h1>
+</header>
+<!-- <header><h1>Velg din faddergruppe</h1></header> -->
 
-    <form action="{% url 'groupfixer:post' %}" method="post" id="fadderbarn-form">
-    {% csrf_token %}
-    <h3>Ditt navn (fornavn og etternavn):</h3>
-        <input type="text" name="name">
+<form action="{% url 'groupfixer:post' %}" method="post" id="fadderbarn-form">
+  {% csrf_token %}
+  <h3>Ditt navn (fornavn og etternavn):</h3>
+  <input type="text" name="name">
 
-    <h3>Ditt kjønn:</h3>
-    {% for gender in genders %}
-        <input type="radio" name="gender" id="{{ gender.0 }}" value="{{ gender.0 }}">
-        <label for="{{ gender.0 }}">{{ gender.1 }}</label><br>
-    {% endfor %}
+  <h3>Ditt kjønn:</h3>
+  {% for gender in genders %}
+  <input type="radio" name="gender" id="{{ gender.0 }}" value="{{ gender.0 }}">
+  <label for="{{ gender.0 }}">{{ gender.1 }}</label><br>
+  {% endfor %}
 
-    <h3>Førstevalg:</h3>
-    <select name="pri_1">
+  <h3>Førstevalg:</h3>
+  <select name="pri_1">
     <option value="-1"></option>
     {% for group in groups %}
-        <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
+    <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
     {% endfor %}
-    </select>
+  </select>
 
-    <h3>Andrevalg:</h3>
-    <select name="pri_2">
+  <h3>Andrevalg:</h3>
+  <select name="pri_2">
     <option value="-1"></option>
     {% for group in groups %}
-        <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
+    <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
     {% endfor %}
-    </select>
+  </select>
 
-    <h3>Tredjevalg:</h3>
-    <select name="pri_3">
+  <h3>Tredjevalg:</h3>
+  <select name="pri_3">
     <option value="-1"></option>
     {% for group in groups %}
-        <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
+    <option value="{{ group.id }}" name="{{ group.name }}">{{ group.name }}</option>
     {% endfor %}
-    </select>
-    <br>
-    <button class="g-recaptcha" data-sitekey="{{ google_recaptcha_data_sitekey }}" data-callback='onSubmit'>Send</button>
-    </form>
-    <small class="notice">This site is protected by reCAPTCHA and the Google
-    <a href="https://policies.google.com/privacy">Privacy Policy</a> and
-    <a href="https://policies.google.com/terms">Terms of Service</a> apply.
-    </small>
+  </select>
+  <br>
+  <button class="g-recaptcha" data-sitekey="{{ google_recaptcha_data_sitekey }}" data-callback='onSubmit'>Send</button>
+</form>
+<small class="notice">This site is protected by reCAPTCHA and the Google
+  <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+  <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+</small>
 
-    <script>
-    $( "select[name='pri_1']" )
-      .change(function() {
-        let name_1 = $( "select[name='pri_1'] option:selected" ).text();
+<script>
+  $("select[name='pri_1']")
+    .change(function () {
+      let name_1 = $("select[name='pri_1'] option:selected").text();
 
-        $( "select[name='pri_2'] option" ).each(function() {
-            $( this ).show();
-        });
+      $("select[name='pri_2'] option").each(function () {
+        $(this).show();
+      });
 
-        $( "select[name='pri_2'] option[name='" + name_1 + "']").hide();
+      $("select[name='pri_2'] option[name='" + name_1 + "']").hide();
 
-        $( "select[name='pri_3'] option" ).each(function() {
-            $( this ).show();
-        });
+      $("select[name='pri_3'] option").each(function () {
+        $(this).show();
+      });
 
-        $( "select[name='pri_3'] option[name='" + name_1 + "']").hide();
+      $("select[name='pri_3'] option[name='" + name_1 + "']").hide();
 
-        let name_2 = $( "select[name='pri_2'] option:selected" ).text();
-        $( "select[name='pri_3'] option[name='" + name_2 + "']").hide();
-      })
-      .trigger( "change" );
+      let name_2 = $("select[name='pri_2'] option:selected").text();
+      $("select[name='pri_3'] option[name='" + name_2 + "']").hide();
+    })
+    .trigger("change");
 
-    $( "select[name='pri_2']" )
-      .change(function() {
-        let name_2 = $( "select[name='pri_2'] option:selected" ).text();
-        let name_1 = $( "select[name='pri_1'] option:selected" ).text();
+  $("select[name='pri_2']")
+    .change(function () {
+      let name_2 = $("select[name='pri_2'] option:selected").text();
+      let name_1 = $("select[name='pri_1'] option:selected").text();
 
-        $( "select[name='pri_3'] option" ).each(function() {
-            $( this ).show();
-        });
+      $("select[name='pri_3'] option").each(function () {
+        $(this).show();
+      });
 
-        $( "select[name='pri_3'] option[name='" + name_2 + "']").hide();
-        $( "select[name='pri_3'] option[name='" + name_1 + "']").hide();
-      })
-      .trigger( "change" );
-    </script>
+      $("select[name='pri_3'] option[name='" + name_2 + "']").hide();
+      $("select[name='pri_3'] option[name='" + name_1 + "']").hide();
+    })
+    .trigger("change");
+</script>
 {% endblock content %}
