@@ -20,10 +20,14 @@
 
 
 {% block content %}
+<!--
 <header>
   <h1>Velg bedrift</h1>
 </header>
-<!-- <header><h1>Velg din faddergruppe</h1></header> -->
+-->
+<header>
+  <h1>Velg din faddergruppe</h1>
+</header>
 
 <form action="{% url 'groupfixer:post' %}" method="post" id="fadderbarn-form">
   {% csrf_token %}
