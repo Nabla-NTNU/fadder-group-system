@@ -23,16 +23,20 @@ class Command(BaseCommand):
         Gruppe.objects.all().delete()
         self.stdout.write('Success!\n\n')
 
-        gruppenavn = ['Faddeterminant ',
-                      'Alfa           ',
-                      'Beta           ',
-                      'Gamma          ',
-                      'Fadder Freedman',
-                      'Ehrenfest      ',
-                      'ÆreNash        ',
-                      'ForbiddenFadder']
+        gruppenavn = ['Faddeterminant    ',
+                      'Alfa              ',
+                      'Beta              ',
+                      'Gamma             ',
+                      'Fadder Freedman   ',
+                      'Ehrenfest         ',
+                      'ÆreNash           ',
+                      'ForbiddenFadder   ',
+                      'Laplace [for alle]']
 
         for navn in gruppenavn:
-            Gruppe.objects.create(name=navn)
+            is_non_alcoholic = False
+            if navn == 'Laplace [for alle]':
+                is_non_alcoholic = True
+            Gruppe.objects.create(name=navn, is_non_alcoholic=is_non_alcoholic)
             self.stdout.write('Created {}\n'.format(navn))
         self.stdout.write('\nFinished!\n\n')

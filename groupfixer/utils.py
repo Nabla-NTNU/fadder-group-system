@@ -9,6 +9,7 @@ DEFAULT_MINIMUM_SIZE = 10
 DEFAULT_MAXIMUM_SIZE = 20
 DEFAULT_MINIMUM_FEMALE_PROPORTION = 0.35
 DEFAULT_MAXIMUM_FEMALE_PROPORTION = 0.65
+DEFAULT_RESPECT_NONALCOHOLIC = True
 
 FIRST_PRI_REWARD = 10
 SECOND_PRI_REWARD = 8
@@ -64,6 +65,7 @@ def run_assign_groups(constraints):
     maximum_size = constraints.get('max_size', DEFAULT_MAXIMUM_SIZE)
     minimum_female_proportion = constraints.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
     maximum_female_proportion = constraints.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
+    respect_non_alcoholic = constraints.get('respect_non_alcoholic', DEFAULT_RESPECT_NONALCOHOLIC)
 
     groups = Gruppe.objects.all().prefetch_related('pri_1s')
     number_of_groups = len(groups)
@@ -99,6 +101,14 @@ def run_assign_groups(constraints):
 
     count_groups_matrix = np.repeat(np.identity(number_of_users), number_of_groups, axis=1)
 
+    # Making vector for "only non-alcoholic groups for non-alcoholic members" constraint
+    non_alcoholic_vector = np.ones(number_of_users*number_of_groups, dtype=int)
+    for i in range(number_of_users):
+        for j in range(number_of_groups):
+            if users[i].wants_nonalcoholic and (not groups[j].is_non_alcoholic):
+                non_alcoholic_vector[i * number_of_groups + j] = False
+
+
     # Making matrix for "number of users in group" constraint
 
     count_users_matrix = np.tile(np.identity(number_of_groups), number_of_users)
@@ -120,6 +130,7 @@ def run_assign_groups(constraints):
     # Creating constraint equations
 
     one_group_constraint = count_groups_matrix @ placement_vector == np.ones(number_of_users)
+    non_alcoholic_constraint = (1 - non_alcoholic_vector) * placement_vector == np.zeros(len(non_alcoholic_vector))
 
     max_users_in_group_constraint = count_users_matrix @ placement_vector <= np.full(number_of_groups, maximum_size)
     min_users_in_group_constraint = count_users_matrix @ placement_vector >= np.full(number_of_groups, minimum_size)
@@ -132,9 +143,14 @@ def run_assign_groups(constraints):
 
     objective = cvxpy.Maximize(reward_vector@placement_vector)
 
-    problem = cvxpy.Problem(objective, [one_group_constraint, max_users_in_group_constraint,
-                                        min_users_in_group_constraint, min_female_proportion_constraint,
-                                        max_female_proportion_constraint])
+    if respect_non_alcoholic:
+        problem = cvxpy.Problem(objective, [one_group_constraint, non_alcoholic_constraint, max_users_in_group_constraint,
+                                            min_users_in_group_constraint, min_female_proportion_constraint,
+                                            max_female_proportion_constraint])
+    else:
+        problem = cvxpy.Problem(objective, [one_group_constraint, max_users_in_group_constraint,
+                                            min_users_in_group_constraint, min_female_proportion_constraint,
+                                            max_female_proportion_constraint])
 
     problem.solve(verbose=settings.DEBUG, solver=cvxpy.GLPK_MI, tm_lim=30000)
 
