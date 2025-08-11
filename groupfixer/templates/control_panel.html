@@ -39,11 +39,18 @@ $(document).ready(function(){
             <button type="submit">Aktiver påmelding</button>
         </form>
         <h4>Antall påmeldte: {{ number_of_users }} ({{ number_of_female_users }} kvinner / {{ number_of_male_users }} menn / {{ female_prop }}%)</h4>
+        <h5>Antall som foretrekker alkoholfri: {{ number_of_nonalc_users }}</h5>
         <form action="{% url 'groupfixer:assign_groups'%}" method="post" id="run_alg">
             {% csrf_token %}
             <button class="option" type="submit">Fordel på grupper</button>
             <div>Gruppestørrelse mellom <input type="number" name="min_size" value="{{ min_size }}" min="0" max="{{ average_per_group_floor }}" maxlength="3"> og <input type="number" name="max_size" value="{{ max_size }}" min="{{ average_per_group_ceil }}" max="{{ number_of_users }}" maxlength="3"></div>
             <div>Jenteandel mellom <input class="float" type="number" name="min_female" value="{{ min_female }}" min="0" max="{{ female_prop_ratio }}" maxlength="3" step="0.01"> og <input type="number" class="float" name="max_female" value="{{ max_female }}" min="{{ female_prop_ratio }}" max="1" maxlength="3" step="0.01"></div>
+            <div>Respekter alkoholfri
+                <select name="respect_non_alcoholic">
+                    <option value="True">True</option>
+                    <option value="False">False</option>
+                </select>
+            </div>
         </form>
         <br>
         <style>
@@ -156,6 +163,15 @@ $(document).ready(function(){
         <div style="background-color:rgb(243, 200, 9);"> <b>Utenfor prioritet:</b></div>
         {% for barn in not_priorities %}
             <li style="background-color:rgb(243, 200, 9);">{{barn.name}}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if non_alc_ignored %}
+        <ul>
+        <div style="background-color:rgb(246, 76, 105);"> <b>Alkoholfri ignorert:</b></div>
+        {% for barn in non_alc_ignored %}
+            <li style="background-color:rgb(246, 76, 105);">{{barn.name}}</li>
         {% endfor %}
         </ul>
         {% endif %}

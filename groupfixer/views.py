@@ -95,6 +95,9 @@ def post_choices(http_request):
         if name == '':
             raise KeyError
         gender = escape(http_request.POST['gender'])
+        wants_nonalcoholic = bool(http_request.POST.get('wants_nonalcoholic'))
+
+        # Make sure first priority is granted to non-alcoholic children
         pri_1 = Gruppe.objects.get(id=http_request.POST['pri_1'])
         pri_2 = Gruppe.objects.get(id=http_request.POST['pri_2'])
         pri_3 = Gruppe.objects.get(id=http_request.POST['pri_3'])
@@ -104,6 +107,9 @@ def post_choices(http_request):
     except Gruppe.DoesNotExist:
         messages.error(http_request, 'Velg tre grupper.')
         return HttpResponseRedirect(reverse('groupfixer:main'))
+    if (wants_nonalcoholic and not pri_1.is_non_alcoholic):
+        messages.error(http_request, 'Velg alkoholfri førsteprioritet (om du skal ha alkoholfri gruppe)')
+        return HttpResponseRedirect(reverse('groupfixer:main'))
     if pri_1 == pri_2 or pri_1 == pri_3 or pri_2 == pri_3:
         messages.error(http_request, 'Velg en gruppe kun én gang.')
         return HttpResponseRedirect(reverse('groupfixer:main'))
@@ -111,7 +117,7 @@ def post_choices(http_request):
         messages.error(http_request, 'Hvordan greide du dette? Du burde søke Webkom!')
         return HttpResponseRedirect(reverse('groupfixer:main'))
 
-    new_fadderbarn = Barn(name=name, gender=gender,
+    new_fadderbarn = Barn(name=name, gender=gender, wants_nonalcoholic=wants_nonalcoholic,
                           pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
     try:
         new_fadderbarn.save()
@@ -142,6 +148,7 @@ def control_panel(http_request):
     context['number_of_users'] = Barn.objects.count()
     context['number_of_male_users'] = Barn.objects.filter(gender='male').count()
     context['number_of_female_users'] = Barn.objects.filter(gender='female').count()
+    context['number_of_nonalc_users'] = Barn.objects.filter(wants_nonalcoholic=True).count()
     try:
         prop = context['number_of_female_users'] / (context['number_of_male_users'] + context['number_of_female_users'])
     except ZeroDivisionError:
@@ -169,6 +176,13 @@ def control_panel(http_request):
         context['groups'] = Gruppe.objects.all().prefetch_related('members')
         for g in context['groups']:
             group_members.append(list(g.members.all()))
+    
+    context['non_alc_ignored'] = []
+    for g in group_members:
+        for m in g:
+            if m.given_group != None:
+                if (m.wants_nonalcoholic and not (m.given_group.is_non_alcoholic)):
+                    context['non_alc_ignored'].append(m)
 
     context['min_size'] = http_request.session.get('min_size', DEFAULT_MINIMUM_SIZE)
     context['max_size'] = http_request.session.get('max_size', DEFAULT_MAXIMUM_SIZE)
@@ -219,6 +233,7 @@ def assign_groups(http_request):
             http_request.session['max_size'] = int(escape(http_request.POST['max_size']))
             http_request.session['min_female'] = float(escape(http_request.POST['min_female']))
             http_request.session['max_female'] = float(escape(http_request.POST['max_female']))
+            http_request.session['respect_non_alcoholic'] = bool(escape(http_request.POST['respect_non_alcoholic']) == "True")
         except (KeyError, ValueError):
             messages.error(http_request, 'Ugyldige instilliger. Prøv igjen.')
             return HttpResponseRedirect(reverse('groupfixer:control_panel'))
