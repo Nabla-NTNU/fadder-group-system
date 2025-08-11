@@ -25,6 +25,12 @@
   <h1>Velg bedrift</h1>
 </header>
 -->
+
+{% if request.user.is_staff %}
+  <a href="/admin">Adminpanel</a>
+  <a href="/control">Kontrollpanel</a>
+{% endif %}
+
 <header>
   <h1>Velg din faddergruppe</h1>
 </header>
