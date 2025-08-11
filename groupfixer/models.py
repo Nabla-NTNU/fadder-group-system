@@ -57,6 +57,10 @@ class Barn(models.Model):
         max_length=80,
         unique=True,
     )
+    wants_nonalcoholic = models.BooleanField(
+        verbose_name='Fadderbarnet ønsker kun akoholfri faddergruppe',
+        default=False
+    )
 
     GENDERS = (
         ('female', 'Kvinne'),

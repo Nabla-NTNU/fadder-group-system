@@ -95,6 +95,7 @@ def post_choices(http_request):
         if name == '':
             raise KeyError
         gender = escape(http_request.POST['gender'])
+        wants_nonalcoholic = bool(http_request.POST.get('wants_nonalcoholic'))
         pri_1 = Gruppe.objects.get(id=http_request.POST['pri_1'])
         pri_2 = Gruppe.objects.get(id=http_request.POST['pri_2'])
         pri_3 = Gruppe.objects.get(id=http_request.POST['pri_3'])
@@ -111,7 +112,7 @@ def post_choices(http_request):
         messages.error(http_request, 'Hvordan greide du dette? Du burde søke Webkom!')
         return HttpResponseRedirect(reverse('groupfixer:main'))
 
-    new_fadderbarn = Barn(name=name, gender=gender,
+    new_fadderbarn = Barn(name=name, gender=gender, wants_nonalcoholic=wants_nonalcoholic,
                           pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
     try:
         new_fadderbarn.save()

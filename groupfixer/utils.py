@@ -60,7 +60,6 @@ def print_diagnostics(groups, members, constraints):
 
 
 def run_assign_groups(constraints):
-
     minimum_size = constraints.get('min_size', DEFAULT_MINIMUM_SIZE)
     maximum_size = constraints.get('max_size', DEFAULT_MAXIMUM_SIZE)
     minimum_female_proportion = constraints.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
