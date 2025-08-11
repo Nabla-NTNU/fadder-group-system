@@ -29,6 +29,16 @@
   <h1>Velg din faddergruppe</h1>
 </header>
 
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <form action="{% url 'groupfixer:post' %}" method="post" id="fadderbarn-form">
   {% csrf_token %}
   <h3>Ditt navn (fornavn og etternavn):</h3>
