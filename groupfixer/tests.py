@@ -21,7 +21,7 @@ class SeedCommandsTest(TestCase):
 
     def test_make_faddergrupper(self):
         call_command('make_faddergrupper', '--force')
-        self.assertEqual(Gruppe.objects.count(), 8)
+        self.assertEqual(Gruppe.objects.count(), 9)
 
     def test_make_fadderbarn(self):
         call_command('make_faddergrupper', '--force', '--silent')
