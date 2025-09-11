@@ -1,0 +1,13 @@
+[Unit]
+Description=fadder daemon
+After=network.target
+
+[Service]
+User=fadder
+Group=webapps
+WorkingDirectory=/srv/fadder-group-system
+ExecStart=/var/websites/fadder/.local/bin/pipenv run production
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
