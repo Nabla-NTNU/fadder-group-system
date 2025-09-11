@@ -25,9 +25,25 @@
   <h1>Velg bedrift</h1>
 </header>
 -->
+
+{% if request.user.is_staff %}
+  <a href="/admin">Adminpanel</a>
+  <a href="/control">Kontrollpanel</a>
+{% endif %}
+
 <header>
   <h1>Velg din faddergruppe</h1>
 </header>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 <form action="{% url 'groupfixer:post' %}" method="post" id="fadderbarn-form">
   {% csrf_token %}
@@ -39,6 +55,12 @@
   <input type="radio" name="gender" id="{{ gender.0 }}" value="{{ gender.0 }}">
   <label for="{{ gender.0 }}">{{ gender.1 }}</label><br>
   {% endfor %}
+
+  <h3>Ønsker alkoholfri:</h3>
+  <input type="checkbox" name="wants_nonalcoholic">
+  Sjekk boksen dersom du <i>kun</i> ønsker å komme inn på en alkoholfri gruppe. 
+  </input>
+
 
   <h3>Førstevalg:</h3>
   <select name="pri_1">

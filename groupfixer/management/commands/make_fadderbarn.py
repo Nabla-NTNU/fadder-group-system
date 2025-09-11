@@ -44,12 +44,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-n', type=int, default=120, required=False, dest='kull_size')
         parser.add_argument('-p', type=float, default=0.4, required=False, dest='female_proportion')
+        parser.add_argument('-a', type=float, default=0.2, required=False, dest='non_alc_proportion')
         parser.add_argument('--force', action='store_true')
         parser.add_argument('--silent', action='store_true')
 
     def handle(self, *args, **kwargs):
         total_number = kwargs['kull_size']
         female_proportion = kwargs['female_proportion']
+        non_alc_proportion = kwargs['non_alc_proportion']
 
         if not settings.DEBUG and not kwargs['force']:
             self.stdout.write('You are not in DEBUG!')
@@ -84,6 +86,12 @@ class Command(BaseCommand):
 
             pri_1 = get_weighted_pick(groups, popularity)
 
+            wants_nonalcoholic = False
+            if pri_1.is_non_alcoholic:
+                if random.random() < non_alc_proportion:
+                    wants_nonalcoholic = True
+
+
             pri_2 = pri_1
             while pri_2 == pri_1:
                 pri_2 = get_weighted_pick(groups, popularity)
@@ -95,7 +103,7 @@ class Command(BaseCommand):
             while True:
                 try:
                     with transaction.atomic():
-                        Barn.objects.create(name=name, gender=gender,
+                        Barn.objects.create(name=name, gender=gender, wants_nonalcoholic=wants_nonalcoholic,
                                             pri_1=pri_1, pri_2=pri_2, pri_3=pri_3)
                     break
                 except IntegrityError:

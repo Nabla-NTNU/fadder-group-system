@@ -13,6 +13,10 @@ class Gruppe(models.Model):
         max_length=80,
         unique=True,
     )
+    is_non_alcoholic = models.BooleanField(
+        verbose_name='Faddergruppen er alkoholfri',
+        default=False
+    )
 
     class Meta:
         verbose_name = 'Faddergruppe'
@@ -52,6 +56,10 @@ class Barn(models.Model):
         blank=False,
         max_length=80,
         unique=True,
+    )
+    wants_nonalcoholic = models.BooleanField(
+        verbose_name='Fadderbarnet ønsker kun akoholfri faddergruppe',
+        default=False
     )
 
     GENDERS = (
