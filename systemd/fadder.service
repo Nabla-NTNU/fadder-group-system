@@ -6,7 +6,7 @@ After=network.target
 User=fadder
 Group=webapps
 WorkingDirectory=/srv/fadder-group-system
-ExecStart=/var/websites/fadder/.local/bin/pipenv run production
+ExecStart=/var/websites/fadder/.pyenv/shims/pipenv run production
 StandardError=journal
 
 [Install]
