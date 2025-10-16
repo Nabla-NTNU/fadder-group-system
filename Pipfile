@@ -17,4 +17,4 @@ mysqlclient = "*"
 python_version = "3.9"
 
 [scripts]
-production = "gunicorn --config /etc/websites/fadder/gunicorn.conf fadder.wsgi:application"
+production = "gunicorn --config /srv/fadder-group-system/systemd/gunicorn.conf fadder.wsgi:application"
