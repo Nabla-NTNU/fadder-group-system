@@ -6,7 +6,7 @@ from os import environ as env
 from .base import *
 
 
-ALLOWED_HOSTS = ["fadder.nabla.no", "www.fadder.nabla.no", "127.0.0.1"]
+ALLOWED_HOSTS = ["fadder.nabla.no", "127.0.0.1"]
 
 DEBUG = bool(env.get("DEBUG", False))
 
