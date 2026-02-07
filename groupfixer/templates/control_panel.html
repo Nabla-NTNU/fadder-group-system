@@ -44,13 +44,13 @@ $(document).ready(function(){
             {% csrf_token %}
             <button class="option" type="submit">Fordel på grupper</button>
             <div>Gruppestørrelse mellom <input type="number" name="min_size" value="{{ min_size }}" min="0" max="{{ average_per_group_floor }}" maxlength="3"> og <input type="number" name="max_size" value="{{ max_size }}" min="{{ average_per_group_ceil }}" max="{{ number_of_users }}" maxlength="3"></div>
-            <div>Jenteandel mellom <input class="float" type="number" name="min_female" value="{{ min_female }}" min="0" max="{{ female_prop_ratio }}" maxlength="3" step="0.01"> og <input type="number" class="float" name="max_female" value="{{ max_female }}" min="{{ female_prop_ratio }}" max="1" maxlength="3" step="0.01"></div>
+            {% comment %} <div>Jenteandel mellom <input class="float" type="number" name="min_female" value="{{ min_female }}" min="0" max="{{ female_prop_ratio }}" maxlength="3" step="0.01"> og <input type="number" class="float" name="max_female" value="{{ max_female }}" min="{{ female_prop_ratio }}" max="1" maxlength="3" step="0.01"></div>
             <div>Respekter alkoholfri
                 <select name="respect_non_alcoholic">
                     <option value="True">True</option>
                     <option value="False">False</option>
                 </select>
-            </div>
+            </div> {% endcomment %}
         </form>
         <br>
         <style>
