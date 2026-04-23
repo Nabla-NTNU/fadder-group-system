@@ -2,6 +2,8 @@ from django.db import models
 
 import datetime
 
+# from groupfixer.utils import DEFAULT_MINIMUM_SIZE, DEFAULT_MAXIMUM_SIZE
+
 # Create your models here.
 
 
@@ -16,6 +18,14 @@ class Gruppe(models.Model):
     is_non_alcoholic = models.BooleanField(
         verbose_name='Faddergruppen er alkoholfri',
         default=False
+    )
+    min_size = models.IntegerField(
+        verbose_name="Minimal størrelse på faddergruppe",
+        default=10  #TODO default til inputverdi fra control
+    )
+    max_size = models.IntegerField(
+        verbose_name="Maksimal størrelse på faddergruppe",
+        default=20 #TODO default til inputverdi fra control
     )
 
     class Meta:

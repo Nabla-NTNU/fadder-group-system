@@ -54,7 +54,7 @@ def print_diagnostics(groups, members, constraints):
 
     diag = ''
     for i in range(len(groups)):
-        size_status = get_size_status(members[i], minimum_size, maximum_size)
+        size_status = get_size_status(members[i], groups[i].min_size, groups[i].max_size)
         gender_status = get_female_proportion_status(members[i], minimum_female_proportion, maximum_female_proportion)
         diag += ('{}:\t{} members{}\t{}\n'.format(groups[i].name, len(members[i]), size_status, gender_status))
     return diag
@@ -132,8 +132,14 @@ def run_assign_groups(constraints):
     one_group_constraint = count_groups_matrix @ placement_vector == np.ones(number_of_users)
     non_alcoholic_constraint = (1 - non_alcoholic_vector) * placement_vector == np.zeros(len(non_alcoholic_vector))
 
-    max_users_in_group_constraint = count_users_matrix @ placement_vector <= np.full(number_of_groups, maximum_size)
-    min_users_in_group_constraint = count_users_matrix @ placement_vector >= np.full(number_of_groups, minimum_size)
+    max_group_size_vec = np.array([group.max_size for group in groups])
+    min_group_size_vec = np.array([group.min_size for group in groups])
+
+    # max_users_in_group_constraint = count_users_matrix @ placement_vector <= np.full(number_of_groups, maximum_size)
+    # min_users_in_group_constraint = count_users_matrix @ placement_vector >= np.full(number_of_groups, minimum_size)
+
+    max_users_in_group_constraint = count_users_matrix @ placement_vector <= max_group_size_vec
+    min_users_in_group_constraint = count_users_matrix @ placement_vector >= min_group_size_vec
 
     count_male_and_female_matrix = count_male_and_female_matrix
 
