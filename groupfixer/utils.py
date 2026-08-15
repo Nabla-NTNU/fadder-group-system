@@ -52,11 +52,12 @@ def print_diagnostics(groups, members, constraints):
     minimum_female_proportion = constraints.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
     maximum_female_proportion = constraints.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
 
+    group_length = max([len(group.name) for group in groups])+2
     diag = ''
     for i in range(len(groups)):
         size_status = get_size_status(members[i], groups[i].min_size, groups[i].max_size)
         gender_status = get_female_proportion_status(members[i], minimum_female_proportion, maximum_female_proportion)
-        diag += ('{}:\t{} members{}\t{}\n'.format(groups[i].name, len(members[i]), size_status, gender_status))
+        diag += ('{}{}:\t{} members{}\t{}\n'.format(groups[i].name, " "*(group_length-len(groups[i].name)), len(members[i]), size_status, gender_status))
     return diag
 
 
