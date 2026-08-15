@@ -2,7 +2,10 @@ from django.db import models
 
 import datetime
 
-# from groupfixer.utils import DEFAULT_MINIMUM_SIZE, DEFAULT_MAXIMUM_SIZE
+from .config import (
+    DEFAULT_MINIMUM_SIZE,
+    DEFAULT_MAXIMUM_SIZE,
+)
 
 # Create your models here.
 
@@ -21,11 +24,11 @@ class Gruppe(models.Model):
     )
     min_size = models.IntegerField(
         verbose_name="Minimal størrelse på faddergruppe",
-        default=10  #TODO default til inputverdi fra control
+        default=DEFAULT_MINIMUM_SIZE
     )
     max_size = models.IntegerField(
         verbose_name="Maksimal størrelse på faddergruppe",
-        default=20 #TODO default til inputverdi fra control
+        default=DEFAULT_MAXIMUM_SIZE
     )
 
     class Meta:

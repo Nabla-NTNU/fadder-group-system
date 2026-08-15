@@ -17,7 +17,7 @@ from cvxpy.error import SolverError
 
 from .models import Gruppe, Barn, Session
 from .utils import run_assign_groups, print_diagnostics, \
-    DEFAULT_MINIMUM_SIZE, DEFAULT_MAXIMUM_SIZE, DEFAULT_MINIMUM_FEMALE_PROPORTION, DEFAULT_MAXIMUM_FEMALE_PROPORTION
+    DEFAULT_USE_STANDARD_GROUP_SIZE, DEFAULT_MINIMUM_SIZE, DEFAULT_MAXIMUM_SIZE, DEFAULT_MINIMUM_FEMALE_PROPORTION, DEFAULT_MAXIMUM_FEMALE_PROPORTION
 
 
 def get_active_session(request):
@@ -189,6 +189,8 @@ def control_panel(http_request):
     context['min_female'] = http_request.session.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
     context['max_female'] = http_request.session.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
 
+    context['use_standard_group_size'] = http_request.session.get('use_standard_group_size', DEFAULT_USE_STANDARD_GROUP_SIZE)
+
     context['diag'] = print_diagnostics(context['groups'], group_members, http_request.session)
 
     context['female_prop_ratio'] = "{:.2f}".format(prop)
@@ -229,6 +231,7 @@ def activate_session(http_request):
 def assign_groups(http_request):
     if http_request.method == 'POST':
         try:
+            http_request.session['use_standard_group_size'] = bool(escape(http_request.POST['use_standard_group_size']) == "True")
             http_request.session['min_size'] = int(escape(http_request.POST['min_size']))
             http_request.session['max_size'] = int(escape(http_request.POST['max_size']))
             http_request.session['min_female'] = float(escape(http_request.POST['min_female']))

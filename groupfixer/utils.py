@@ -5,16 +5,18 @@ from .models import Gruppe, Barn
 import numpy as np
 import cvxpy
 
-DEFAULT_MINIMUM_SIZE = 10
-DEFAULT_MAXIMUM_SIZE = 20
-DEFAULT_MINIMUM_FEMALE_PROPORTION = 0.35
-DEFAULT_MAXIMUM_FEMALE_PROPORTION = 0.65
-DEFAULT_RESPECT_NONALCOHOLIC = True
+from .config import (
+    DEFAULT_USE_STANDARD_GROUP_SIZE, 
+    DEFAULT_MINIMUM_SIZE,
+    DEFAULT_MAXIMUM_SIZE,
+    DEFAULT_MINIMUM_FEMALE_PROPORTION,
+    DEFAULT_MAXIMUM_FEMALE_PROPORTION,
+    DEFAULT_RESPECT_NONALCOHOLIC,
 
-FIRST_PRI_REWARD = 10
-SECOND_PRI_REWARD = 8
-THIRD_PRI_REWARD = 5
-
+    FIRST_PRI_REWARD,
+    SECOND_PRI_REWARD,
+    THIRD_PRI_REWARD,
+)
 
 def get_size_status(member_list, minimum_size, maximum_size):
     status = '\t\t'
@@ -46,7 +48,6 @@ def get_female_proportion_status(member_list, minimum_female_proportion, maximum
 
 
 def print_diagnostics(groups, members, constraints):
-
     minimum_size = constraints.get('min_size', DEFAULT_MINIMUM_SIZE)
     maximum_size = constraints.get('max_size', DEFAULT_MAXIMUM_SIZE)
     minimum_female_proportion = constraints.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
@@ -62,6 +63,7 @@ def print_diagnostics(groups, members, constraints):
 
 
 def run_assign_groups(constraints):
+    use_standard_group_size = constraints.get('use_standard_group_size', DEFAULT_USE_STANDARD_GROUP_SIZE)
     minimum_size = constraints.get('min_size', DEFAULT_MINIMUM_SIZE)
     maximum_size = constraints.get('max_size', DEFAULT_MAXIMUM_SIZE)
     minimum_female_proportion = constraints.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
@@ -136,11 +138,12 @@ def run_assign_groups(constraints):
     max_group_size_vec = np.array([group.max_size for group in groups])
     min_group_size_vec = np.array([group.min_size for group in groups])
 
-    # max_users_in_group_constraint = count_users_matrix @ placement_vector <= np.full(number_of_groups, maximum_size)
-    # min_users_in_group_constraint = count_users_matrix @ placement_vector >= np.full(number_of_groups, minimum_size)
-
-    max_users_in_group_constraint = count_users_matrix @ placement_vector <= max_group_size_vec
-    min_users_in_group_constraint = count_users_matrix @ placement_vector >= min_group_size_vec
+    if use_standard_group_size:
+        max_users_in_group_constraint = count_users_matrix @ placement_vector <= np.full(number_of_groups, maximum_size)
+        min_users_in_group_constraint = count_users_matrix @ placement_vector >= np.full(number_of_groups, minimum_size)
+    else:
+        max_users_in_group_constraint = count_users_matrix @ placement_vector <= max_group_size_vec
+        min_users_in_group_constraint = count_users_matrix @ placement_vector >= min_group_size_vec
 
     count_male_and_female_matrix = count_male_and_female_matrix
 
