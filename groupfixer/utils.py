@@ -47,7 +47,7 @@ def get_female_proportion_status(member_list, minimum_female_proportion, maximum
     return status
 
 
-def print_diagnostics(groups, members, constraints):
+def print_diagnostics(groups, members, constraints, use_standard_group_size=True):
     minimum_size = constraints.get('min_size', DEFAULT_MINIMUM_SIZE)
     maximum_size = constraints.get('max_size', DEFAULT_MAXIMUM_SIZE)
     minimum_female_proportion = constraints.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
@@ -56,7 +56,10 @@ def print_diagnostics(groups, members, constraints):
     group_length = max([len(group.name) for group in groups])+2
     diag = ''
     for i in range(len(groups)):
-        size_status = get_size_status(members[i], groups[i].min_size, groups[i].max_size)
+        if use_standard_group_size:
+            size_status = get_size_status(members[i], minimum_size, maximum_size)
+        else:
+            size_status = get_size_status(members[i], groups[i].min_size, groups[i].max_size)
         gender_status = get_female_proportion_status(members[i], minimum_female_proportion, maximum_female_proportion)
         diag += ('{}{}:\t{} members{}\t{}\n'.format(groups[i].name, " "*(group_length-len(groups[i].name)), len(members[i]), size_status, gender_status))
     return diag
@@ -73,13 +76,17 @@ def run_assign_groups(constraints):
     groups = Gruppe.objects.all().prefetch_related('pri_1s')
     number_of_groups = len(groups)
 
+    for g in groups:
+        g.min_size = constraints.get(g.name+'_min_size', DEFAULT_MINIMUM_SIZE)
+        g.max_size = constraints.get(g.name+'_max_size', DEFAULT_MAXIMUM_SIZE)
+
     group_members = []
 
     for g in groups:
         group_members.append(list(g.pri_1s.all()))
 
     if settings.DEBUG:
-        print(print_diagnostics(groups, group_members, constraints))
+        print(print_diagnostics(groups, group_members, constraints, use_standard_group_size))
 
     users = list(Barn.objects.all().order_by('pk'))
     np.random.shuffle(users)
@@ -179,4 +186,4 @@ def run_assign_groups(constraints):
     for g in groups:
         group_members.append(list(g.members.all()))
     if settings.DEBUG:
-        print(print_diagnostics(groups, group_members, constraints))
+        print(print_diagnostics(groups, group_members, constraints, use_standard_group_size))

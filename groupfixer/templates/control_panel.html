@@ -12,6 +12,20 @@ $(document).ready(function(){
 });
 </script>
 
+
+<script type="text/javascript">
+function showDiv(divId, element, val)
+{
+  var currentValue = element.value
+
+  document.getElementById(divId).style.display = (
+    currentValue  !== 'None' &&
+    currentValue  == val
+  ) ? 'block' : 'none';
+}
+</script>
+
+
 {% endblock %}
 
 {% block content %}
@@ -44,12 +58,22 @@ $(document).ready(function(){
             {% csrf_token %}
             <button class="option" type="submit">Fordel på grupper</button>
             <div>Bruk standard gruppestørrelse 
-                <select name="use_standard_group_size">
+                <select name="use_standard_group_size" onchange="showDiv('std_grp_size', this, 'True'); showDiv('ind_grp_size', this, 'False')">
                     <option value="True">True</option> 
                     <option value="False">False</option>
                 </select>
             </div>
-            <div>Standard gruppestørrelse mellom <input type="number" name="min_size" value="{{ min_size }}" min="0" max="{{ average_per_group_floor }}" maxlength="3"> og <input type="number" name="max_size" value="{{ max_size }}" min="{{ average_per_group_ceil }}" max="{{ number_of_users }}" maxlength="3"></div>
+            <select name="HALLO"> </select>
+            <div id="std_grp_size">Standard gruppestørrelse mellom <input type="number" name="min_size" value="{{ min_size }}" min="0" max="{{ average_per_group_floor }}" maxlength="3"> og <input type="number" name="max_size" value="{{ max_size }}" min="{{ average_per_group_ceil }}" max="{{ number_of_users }}" maxlength="3"></div>
+            <div id="ind_grp_size" hidden="True">
+                <div> Gruppestørrelser: </div>
+                {% for group in groups %}
+                    <!-- TODO: Legg til at man maks/min kan velge et visst tall  -->
+                    <div> {{ group }}: <input type="number" name="{{ group.name }}_min_size" value="{{ min_size }}" min="0" max="{{ number_of_users }}" maxlength="3"> - <input type="number" name="{{ group.name }}_max_size" value="{{ max_size }}" min="0" max="{{ number_of_users }}" maxlength="3"></div>
+                {% endfor %}
+            </div>
+            <div> ------------------------------------- </div>
+
             <div>Jenteandel mellom <input class="float" type="number" name="min_female" value="{{ min_female }}" min="0" max="{{ female_prop_ratio }}" maxlength="3" step="0.01"> og <input type="number" class="float" name="max_female" value="{{ max_female }}" min="{{ female_prop_ratio }}" max="1" maxlength="3" step="0.01"></div>
             <div>Respekter alkoholfri
                 <select name="respect_non_alcoholic">
@@ -60,7 +84,8 @@ $(document).ready(function(){
         </form>
         <br>
         <style>
-         #graphical_constraints {}
+         /* <!--TODO: Fiks dette for ikke_standard--> */
+         #graphical_constraints {} 
          #graphical_constraints .interval {
              position: relative;
          }
