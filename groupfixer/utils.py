@@ -77,8 +77,10 @@ def run_assign_groups(constraints):
     number_of_groups = len(groups)
 
     for g in groups:
+        
         g.min_size = constraints.get(g.name+'_min_size', DEFAULT_MINIMUM_SIZE)
         g.max_size = constraints.get(g.name+'_max_size', DEFAULT_MAXIMUM_SIZE)
+        print(g, g.min_size)
 
     group_members = []
 

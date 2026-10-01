@@ -185,9 +185,11 @@ def control_panel(http_request):
                     context['non_alc_ignored'].append(m)
 
     for g in context['groups']:
-        print(g)
+        print(g.name+'_min_size')
         context[g.name+'_min_size']=http_request.session.get(g.name+'_min_size', DEFAULT_MINIMUM_SIZE)
         context[g.name+'_max_size']=http_request.session.get(g.name+'_max_size', DEFAULT_MAXIMUM_SIZE)
+        g.min_size = context[g.name+'_min_size']
+        g.max_size = context[g.name+'_max_size']
 
     context['min_size'] = http_request.session.get('min_size', DEFAULT_MINIMUM_SIZE)
     context['max_size'] = http_request.session.get('max_size', DEFAULT_MAXIMUM_SIZE)
@@ -195,6 +197,7 @@ def control_panel(http_request):
     context['max_female'] = http_request.session.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
 
     context['use_standard_group_size'] = http_request.session.get('use_standard_group_size', DEFAULT_USE_STANDARD_GROUP_SIZE)
+    context['respect_non_alcoholic'] = http_request.session.get('respect_non_alcoholic', DEFAULT_USE_STANDARD_GROUP_SIZE)
 
     context['diag'] = print_diagnostics(context['groups'], group_members, http_request.session)
 
@@ -236,13 +239,14 @@ def activate_session(http_request):
 def assign_groups(http_request):
     print("HALLLLLLLLO!!!!!")
     print(http_request.session.keys())
+    groups = Gruppe.objects.all().prefetch_related('members')
     if http_request.method == 'POST':
         try:
             http_request.session['use_standard_group_size'] = bool(escape(http_request.POST['use_standard_group_size']) == "True")
             # TODO: Fiks dette:
-            # for g in :
-            # http_request.session[g.name+'_min_size'] = int(escape(http_request.POST[g.name+'_min_size']))
-            # http_request.session[g.name+'_max_size'] = int(escape(http_request.POST[g.name+'_max_size']))
+            for g in groups:
+                http_request.session[g.name+'_min_size'] = int(escape(http_request.POST[g.name+'_min_size']))
+                http_request.session[g.name+'_max_size'] = int(escape(http_request.POST[g.name+'_max_size']))
 
             
             http_request.session['min_size'] = int(escape(http_request.POST['min_size']))
