@@ -185,7 +185,6 @@ def control_panel(http_request):
                     context['non_alc_ignored'].append(m)
 
     for g in context['groups']:
-        print(g.name+'_min_size')
         context[g.name+'_min_size']=http_request.session.get(g.name+'_min_size', DEFAULT_MINIMUM_SIZE)
         context[g.name+'_max_size']=http_request.session.get(g.name+'_max_size', DEFAULT_MAXIMUM_SIZE)
         g.min_size = context[g.name+'_min_size']
@@ -193,13 +192,21 @@ def control_panel(http_request):
 
     context['min_size'] = http_request.session.get('min_size', DEFAULT_MINIMUM_SIZE)
     context['max_size'] = http_request.session.get('max_size', DEFAULT_MAXIMUM_SIZE)
+
+    context['min_group_size'] = min([g.min_size for g in context['groups']])
+    context['max_group_size'] = max([g.max_size for g in context['groups']])
+
     context['min_female'] = http_request.session.get('min_female', DEFAULT_MINIMUM_FEMALE_PROPORTION)
     context['max_female'] = http_request.session.get('max_female', DEFAULT_MAXIMUM_FEMALE_PROPORTION)
 
     context['use_standard_group_size'] = http_request.session.get('use_standard_group_size', DEFAULT_USE_STANDARD_GROUP_SIZE)
     context['respect_non_alcoholic'] = http_request.session.get('respect_non_alcoholic', DEFAULT_USE_STANDARD_GROUP_SIZE)
 
-    context['diag'] = print_diagnostics(context['groups'], group_members, http_request.session)
+    if not context['use_standard_group_size']:
+        context['min_size'] = context['min_group_size']
+        context['max_size'] = context['max_group_size']
+
+    context['diag'] = print_diagnostics(context['groups'], group_members, http_request.session, context['use_standard_group_size'])
 
     context['female_prop_ratio'] = "{:.2f}".format(prop)
     context['average_per_group_floor'] = int(floor(context['number_of_users']/len(context['groups'])))
@@ -237,8 +244,6 @@ def activate_session(http_request):
 
 @staff_member_required
 def assign_groups(http_request):
-    print("HALLLLLLLLO!!!!!")
-    print(http_request.session.keys())
     groups = Gruppe.objects.all().prefetch_related('members')
     if http_request.method == 'POST':
         try:

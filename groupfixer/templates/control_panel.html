@@ -89,7 +89,6 @@ function showDiv(divId, element, val)
         </form>
         <br>
         <style>
-         /* <!--TODO: Fiks dette for ikke_standard--> */
          #graphical_constraints {} 
          #graphical_constraints .interval {
              position: relative;
@@ -158,10 +157,10 @@ function showDiv(divId, element, val)
                     <span class="label">Max: {{ max_size }}</span>
                 </div>
                 {% for group in groups %}
-                    {% with female_ratio=group.member_count %}
+                    {% with group_size=group.member_count %}
                         <div class="interval__item"
-                             style="left: {% widthratio female_ratio 30 100 %}%"
-                             title="{{ group.name }} : {{ female_ratio }}">
+                             style="left: {% widthratio group_size 30 100 %}%"
+                             title="{{ group.name }} : {{ group_size }}">
                         </div>
                     {% endwith %}
                 {% endfor %}
