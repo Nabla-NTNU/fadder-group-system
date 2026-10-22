@@ -2,6 +2,11 @@ from django.db import models
 
 import datetime
 
+from .config import (
+    DEFAULT_MINIMUM_SIZE,
+    DEFAULT_MAXIMUM_SIZE,
+)
+
 # Create your models here.
 
 
@@ -16,6 +21,14 @@ class Gruppe(models.Model):
     is_non_alcoholic = models.BooleanField(
         verbose_name='Faddergruppen er alkoholfri',
         default=False
+    )
+    min_size = models.IntegerField(
+        verbose_name="Minimal størrelse på faddergruppe",
+        default=DEFAULT_MINIMUM_SIZE
+    )
+    max_size = models.IntegerField(
+        verbose_name="Maksimal størrelse på faddergruppe",
+        default=DEFAULT_MAXIMUM_SIZE
     )
 
     class Meta:
