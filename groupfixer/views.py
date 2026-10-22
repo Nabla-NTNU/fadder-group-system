@@ -189,6 +189,7 @@ def control_panel(http_request):
         context[g.name+'_max_size']=http_request.session.get(g.name+'_max_size', DEFAULT_MAXIMUM_SIZE)
         g.min_size = context[g.name+'_min_size']
         g.max_size = context[g.name+'_max_size']
+        g.save()
 
     context['min_size'] = http_request.session.get('min_size', DEFAULT_MINIMUM_SIZE)
     context['max_size'] = http_request.session.get('max_size', DEFAULT_MAXIMUM_SIZE)
